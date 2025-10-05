@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import TeacherPage from "./Teacher";
 import StudentPage from "./Student";
 import Home from "./Home";
+import About from "./About"; // ✅ Add this line
 
 const Base = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,16 +40,16 @@ const Base = () => {
     );
   }
 
-  // ✅ Decide which dashboard to show
+  // ✅ Decide which page to render
   let content;
-  if (!user) {
-    // Not logged in — show Home (public landing)
+
+  if (location.pathname === "/about") {
+    content = <About />; // ✅ Show About page if /about
+  } else if (!user) {
     content = <Home />;
   } else if (user?.is_teacher) {
-    // Teacher dashboard
     content = <TeacherPage />;
   } else {
-    // Student dashboard
     content = <StudentPage />;
   }
 
@@ -58,7 +60,7 @@ const Base = () => {
         <Header />
       </header>
 
-      {/* Main content */}
+      {/* Main Content */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
         {content}
       </main>
