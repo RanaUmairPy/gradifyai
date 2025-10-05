@@ -28,7 +28,7 @@ const StudentPage = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${BASE_API}/api/classclassrooms/my-classes/`,
+        `${BASE_API}api/classclassrooms/my-classes/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -56,7 +56,7 @@ const StudentPage = () => {
 
     try {
       const res = await fetch(
-        `${BASE_API}/api/classclassrooms/join/`,
+        `${BASE_API}api/classclassrooms/join/`,
         {
           method: "POST",
           headers: {

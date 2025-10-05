@@ -28,7 +28,7 @@ const TeacherPage = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${BASE_API}/api/classclassrooms/`,
+        `${BASE_API}api/classclassrooms/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -58,7 +58,7 @@ const TeacherPage = () => {
 
     try {
       const res = await fetch(
-        `${BASE_API}/api/classclassrooms/`,
+        `${BASE_API}api/classclassrooms/`,
         {
           method: "POST",
           headers: {
