@@ -15,10 +15,6 @@ const Base = () => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("access");
 
-    if (!storedUser || !token) {
-      navigate("/login");
-      return;
-    }
 
     setUser(storedUser);
     setLoading(false);
