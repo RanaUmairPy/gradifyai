@@ -4,7 +4,7 @@ import Base from "./pages/Base";
 import Login from "./Auth/Login";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Sitemap from "./sitemap";
+
 
 const App = () => {
   return (
