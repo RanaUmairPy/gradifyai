@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { User, RefreshCcw, PlusCircle, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import BASE_API from "../BaseApi";
 
 const TeacherPage = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const TeacherPage = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        "https://sticky-merla-ranaumairpy-7c72ead8.koyeb.app/api/classclassrooms/",
+        `${BASE_API}/api/classclassrooms/`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -57,7 +58,7 @@ const TeacherPage = () => {
 
     try {
       const res = await fetch(
-        "https://sticky-merla-ranaumairpy-7c72ead8.koyeb.app/api/classclassrooms/",
+        `${BASE_API}/api/classclassrooms/`,
         {
           method: "POST",
           headers: {
