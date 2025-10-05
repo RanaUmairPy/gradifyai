@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import Home from "./Home";
 import TeacherPage from "./Teacher";
-import Login from "../Auth/Login";
+import StudentPage from "./Student";
+import Home from "./Home";
 
 const Base = () => {
   const navigate = useNavigate();
@@ -11,10 +11,15 @@ const Base = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // ✅ Get user info from localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("access");
 
+    // If not logged in → show home page (public view)
+    if (!storedUser || !token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
 
     setUser(storedUser);
     setLoading(false);
@@ -23,7 +28,6 @@ const Base = () => {
   const theme = {
     bg: "bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-200",
     header: "bg-white/80 backdrop-blur-md border-b border-indigo-100 shadow-md",
-    text: "text-gray-800",
   };
 
   if (loading) {
@@ -34,25 +38,32 @@ const Base = () => {
     );
   }
 
+  // ✅ Decide which dashboard to show
+  let content;
+  if (!user) {
+    // Not logged in — show Home (public landing)
+    content = <Home />;
+  } else if (user?.is_teacher) {
+    // Teacher dashboard
+    content = <TeacherPage />;
+  } else {
+    // Student dashboard
+    content = <StudentPage />;
+  }
+
   return (
     <div className={`min-h-screen flex flex-col ${theme.bg}`}>
-      {/* Header */}
+      {/* Header always visible */}
       <header className={`sticky top-0 z-50 ${theme.header}`}>
         <Header />
       </header>
 
-      {/* Main Content */}
+      {/* Main content */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
-        <section className="mb-12">
-          {/* ✅ If teacher, show TeacherPage; otherwise show Home */}
-          {user?.role === "teacher" ? <TeacherPage /> : <Home />}
-        </section>
-
-        {/* Nested routes (if any) */}
-        <Outlet />
+        {content}
       </main>
 
-      {/* Footer */}
+      {/* Footer always visible */}
       <footer className="bg-white/60 backdrop-blur-md border-t border-indigo-100 shadow-inner py-6 text-center text-gray-600">
         <p className="text-sm">
           © {new Date().getFullYear()}{" "}

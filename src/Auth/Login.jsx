@@ -44,9 +44,9 @@ const Login = () => {
         // 🔹 Redirect based on user role
         setTimeout(() => {
           if (user.is_teacher) {
-            navigate("/teacher"); // teacher goes to teacher dashboard
+            navigate("/"); // teacher goes to teacher dashboard
           } else {
-            navigate("/student"); // student goes to student dashboard
+            navigate("/"); // student goes to student dashboard
           }
         }, 1000);
       }
