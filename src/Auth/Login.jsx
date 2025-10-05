@@ -3,6 +3,7 @@ import axios from "axios";
 import { LogIn, User, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BASE_API from "../BaseApi";
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -31,16 +32,22 @@ const Login = () => {
       if (response.status === 200) {
         setMessage("✅ Login successful!");
 
-        // store all tokens and user data in localStorage
+        // Save tokens and user data
         localStorage.setItem("access", response.data.access);
         localStorage.setItem("refresh", response.data.refresh);
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
+        const user = response.data.user;
+
         setFormData({ username: "", password: "" });
 
-        // redirect after 1s delay for smooth UX
+        // 🔹 Redirect based on user role
         setTimeout(() => {
-          navigate("/"); // redirect to home
+          if (user.is_teacher) {
+            navigate("/teacher"); // teacher goes to teacher dashboard
+          } else {
+            navigate("/student"); // student goes to student dashboard
+          }
         }, 1000);
       }
     } catch (error) {
@@ -60,7 +67,9 @@ const Login = () => {
           <h2 className="text-2xl font-bold text-gray-800">
             Welcome Back to <span className="text-indigo-600">GradifyEdu</span>
           </h2>
-          <p className="text-gray-500 text-sm mt-1">Please sign in to continue</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Please sign in to continue
+          </p>
         </div>
 
         {/* Message */}
@@ -78,7 +87,9 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Username */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Username</label>
+            <label className="block text-gray-700 font-medium mb-1">
+              Username
+            </label>
             <div className="flex items-center border border-gray-300 rounded-xl px-3 py-2 bg-white">
               <User className="text-indigo-500 w-5 h-5 mr-2" />
               <input
@@ -95,7 +106,9 @@ const Login = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Password</label>
+            <label className="block text-gray-700 font-medium mb-1">
+              Password
+            </label>
             <div className="flex items-center border border-gray-300 rounded-xl px-3 py-2 bg-white">
               <Lock className="text-indigo-500 w-5 h-5 mr-2" />
               <input
@@ -122,7 +135,10 @@ const Login = () => {
 
         <p className="text-center text-gray-500 text-sm mt-6">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-indigo-600 font-medium hover:underline">
+          <a
+            href="/signup"
+            className="text-indigo-600 font-medium hover:underline"
+          >
             Sign Up
           </a>
         </p>

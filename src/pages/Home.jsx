@@ -1,68 +1,45 @@
-import React, { useState } from "react";
-import { GraduationCap, Users, PlusCircle, LogIn } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { BookCheck, Brain, LogIn } from "lucide-react";
 
 const Home = () => {
-  const [classes] = useState([
-    { id: 1, name: "Web Development", code: "WD101" },
-    { id: 2, name: "Data Science", code: "DS202" },
-    { id: 3, name: "AI & Machine Learning", code: "AI303" },
-  ]);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-white py-12">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Welcome Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
-          <div className="flex items-center gap-3">
-            <GraduationCap className="text-indigo-600 w-10 h-10" />
-            <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight">
-              Welcome to <span className="text-indigo-600">GradifyEdu</span>
-            </h2>
-          </div>
-
-          <div className="flex flex-wrap gap-4 justify-center md:justify-end">
-            <button className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-xl shadow-md hover:bg-indigo-700 active:scale-95 transition-all duration-300">
-              <PlusCircle className="w-5 h-5" /> Create Class
-            </button>
-            <button className="flex items-center gap-2 px-6 py-2.5 border border-indigo-600 text-indigo-600 font-medium rounded-xl hover:bg-indigo-600 hover:text-white transition-all duration-300">
-              <LogIn className="w-5 h-5" /> Join Class
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex flex-col justify-center items-center text-white px-6">
+      <div className="text-center max-w-2xl">
+        <div className="flex justify-center mb-6">
+          <div className="bg-white/20 p-4 rounded-2xl shadow-lg">
+            <BookCheck size={60} />
           </div>
         </div>
 
-        {/* Classes Section */}
-        <section>
-          <h3 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center gap-2">
-            <Users className="w-5 h-5 text-indigo-600" /> Your Classes
-          </h3>
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
+          Assignment Checker AI
+        </h1>
 
-          {classes.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-indigo-100">
-              <p className="text-gray-500 text-lg">
-                No classes yet. Click{" "}
-                <span className="font-medium text-indigo-600">Create</span> or{" "}
-                <span className="font-medium text-indigo-600">Join</span> to get started!
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {classes.map((cls) => (
-                <div
-                  key={cls.id}
-                  className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-transparent hover:border-indigo-200 hover:-translate-y-1"
-                >
-                  <h4 className="text-xl font-semibold text-gray-800 mb-2">
-                    {cls.name}
-                  </h4>
-                  <p className="text-gray-500 mb-4">Class Code: {cls.code}</p>
-                  <button className="text-indigo-600 text-sm font-medium hover:underline">
-                    View Details →
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        <p className="text-lg sm:text-xl text-white/80 mb-8">
+          Simplify your academic workflow — upload, check, and analyze assignments instantly using AI-powered evaluation. 
+          Manage your classes, track progress, and get smart feedback for every submission.
+        </p>
+
+        <div className="flex justify-center gap-4">
+          <Link
+            to="/login"
+            className="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-50 transition"
+          >
+            <LogIn size={20} /> Login
+          </Link>
+
+          <Link
+            to="/signup"
+            className="border-2 border-white font-semibold px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-white/20 transition"
+          >
+            <Brain size={20} /> Sign Up
+          </Link>
+        </div>
+
+        <div className="mt-12 text-white/60 text-sm">
+          © {new Date().getFullYear()} Assignment Checker — Built for students and teachers
+        </div>
       </div>
     </div>
   );
