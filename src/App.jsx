@@ -1,26 +1,29 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Base from "./pages/Base";
-import Login from "./Auth/Login";
-import Home from "./pages/Home";
-import About from "./pages/About";
 
+// Import Layout/Wrapper Component
+import Base from "./pages/Base";
+
+// Import Auth Pages
+import Login from "./Auth/Login";
+import Signup from "./Auth/Signup"; // 👈 Add this import
+import EmailConfirmation from "./Auth/EmailConfirmation"; // 👈 Add this import
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* ✅ Base wraps all public and dashboard pages */}
-        <Route path="/" element={<Base />}>
-          {/* Public home (landing page) */}
-          <Route index element={<Home />} />
-
-          {/* About page route inside Base */}
-          <Route path="/about" element={<About />} />
-        </Route>
-
-        {/* Login page (outside layout) */}
+        {/* Authentication routes that don't use the main layout */}
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/email-confirmation" element={<EmailConfirmation />} />
+
+        {/* All other routes are handled by the Base component.
+          The "/*" wildcard path tells React Router to render the Base component
+          for any path that hasn't been matched yet (e.g., "/", "/about", dashboard pages).
+          Base.jsx will then use its internal logic to display the correct content.
+        */}
+        <Route path="/*" element={<Base />} />
       </Routes>
     </Router>
   );
