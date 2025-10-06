@@ -14,12 +14,12 @@ export default defineConfig({
       theme_color: '#0f172a',
       icons: [
         {
-          src: '\public\gradifylogo.png',
+          src: '/gradifylogo.png',
           sizes: '192x192',
           type: 'image/png'
         },
         {
-          src: '\public\gradifylogo.png',
+          src: '/gradifylogo.png',
           sizes: '512x512',
           type: 'image/png'
         }

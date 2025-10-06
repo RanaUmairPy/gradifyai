@@ -46,7 +46,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
           <img
-            src="\public\gradifylogo.png"
+            src="/gradifylogo.png"
             alt="GradifyAI Logo"
             className="w-11 h-11 group-hover:rotate-6 transition-transform duration-300"
           />
