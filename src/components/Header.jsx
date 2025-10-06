@@ -45,7 +45,11 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
-          <GraduationCap className="text-indigo-600 w-9 h-9 group-hover:rotate-6 transition-transform duration-300" />
+          <img
+            src="\public\gradifylogo.png"
+            alt="GradifyAI Logo"
+            className="w-11 h-11 group-hover:rotate-6 transition-transform duration-300"
+          />
           <span className="text-2xl font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">
             Gradify<span className="text-blue-500">Ai</span>
           </span>
@@ -57,9 +61,8 @@ const Header = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center space-x-1 hover:text-indigo-600 transition relative after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-0 after:bg-indigo-600 hover:after:w-full after:transition-all duration-300 ${
-                location.pathname === link.path ? "text-indigo-600 after:w-full" : ""
-              }`}
+              className={`flex items-center space-x-1 hover:text-indigo-600 transition relative after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-0 after:bg-indigo-600 hover:after:w-full after:transition-all duration-300 ${location.pathname === link.path ? "text-indigo-600 after:w-full" : ""
+                }`}
             >
               {link.icon}
               <span>{link.name}</span>
@@ -117,9 +120,8 @@ const Header = () => {
               key={link.path}
               to={link.path}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 text-gray-700 text-base font-medium hover:text-indigo-600 transition ${
-                location.pathname === link.path ? "text-indigo-600 font-semibold" : ""
-              }`}
+              className={`flex items-center gap-2 text-gray-700 text-base font-medium hover:text-indigo-600 transition ${location.pathname === link.path ? "text-indigo-600 font-semibold" : ""
+                }`}
             >
               {link.icon}
               {link.name}
