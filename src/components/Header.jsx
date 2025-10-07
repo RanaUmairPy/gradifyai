@@ -12,6 +12,7 @@ import {
   UserPlus,
   User,
   LogOut,
+  Shield,
 } from "lucide-react";
 
 const Header = () => {
@@ -20,145 +21,170 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Load user on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("access");
     setUser(null);
-    navigate("/login");
+    navigate("/");
   };
 
   const navLinks = [
-    { name: "Home", path: "/", icon: <BookOpen className="w-4 h-4 text-blue-600" /> },
-    { name: "About", path: "/about", icon: <Info className="w-4 h-4 text-green-600" /> },
-    { name: "Features", path: "/features", icon: <Star className="w-4 h-4 text-yellow-500" /> },
-    { name: "Contact", path: "/contact", icon: <Phone className="w-4 h-4 text-purple-600" /> },
+    { name: "Home", path: "/", icon: BookOpen },
+    { name: "Features", path: "/features", icon: Star },
+    { name: "About", path: "/about", icon: Info },
+    { name: "Privacy", path: "/privacy", icon: Shield },
+    { name: "Contact", path: "/contact", icon: Phone },
   ];
 
+  const NavItem = ({ link }) => {
+    const isActive = location.pathname === link.path;
+    const Icon = link.icon;
+    return (
+      <Link
+        to={link.path}
+        onClick={() => setIsOpen(false)}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 
+          ${
+            isActive
+              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-sm"
+              : "text-gray-700 hover:text-indigo-600 hover:bg-gray-100"
+          }`}
+      >
+        <Icon className="w-4 h-4" />
+        {link.name}
+      </Link>
+    );
+  };
+
   return (
-    <header className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2 group">
-          <img
-            src="/gradifylogo.png"
-            alt="GradifyAI Logo"
-            className="w-11 h-11 group-hover:rotate-6 transition-transform duration-300"
-          />
-          <span className="text-2xl font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">
-            Gradify<span className="text-blue-500">Ai</span>
-          </span>
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="p-2 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-lg group-hover:scale-105 transition-transform">
+            <GraduationCap className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-extrabold text-gray-900 tracking-tight">
+              Gradify<span className="text-indigo-500">AI</span>
+            </h1>
+            <p className="text-xs text-gray-500">Smart Learning Dashboard</p>
+          </div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-8 text-gray-700 font-medium">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`flex items-center space-x-1 hover:text-indigo-600 transition relative after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-0 after:bg-indigo-600 hover:after:w-full after:transition-all duration-300 ${location.pathname === link.path ? "text-indigo-600 after:w-full" : ""
-                }`}
-            >
-              {link.icon}
-              <span>{link.name}</span>
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-6">
+          <nav className="flex items-center gap-2">
+            {navLinks.map((l) => (
+              <NavItem key={l.path} link={l} />
+            ))}
+          </nav>
 
-        {/* Auth Buttons / User Info */}
-        <div className="hidden md:flex items-center space-x-4">
+          {/* Auth */}
           {!user ? (
-            <>
+            <div className="flex items-center gap-3">
               <Link
                 to="/login"
-                className="flex items-center gap-1 px-5 py-2 border border-indigo-600 text-indigo-600 rounded-xl font-medium hover:bg-indigo-600 hover:text-white transition-all duration-300"
+                className="px-4 py-2 rounded-full border border-indigo-500 text-indigo-600 font-medium hover:bg-indigo-50 transition"
               >
-                <LogIn className="w-4 h-4" /> Login
+                <LogIn className="inline-block w-4 h-4 mr-2" />
+                Login
               </Link>
               <Link
                 to="/signup"
-                className="flex items-center gap-1 px-5 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-all duration-300"
+                className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition"
               >
-                <UserPlus className="w-4 h-4" /> Sign Up
+                <UserPlus className="inline-block w-4 h-4 mr-2" />
+                Sign Up
               </Link>
-            </>
+            </div>
           ) : (
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center gap-2 bg-indigo-100 px-4 py-2 rounded-xl">
-                <User className="w-5 h-5 text-indigo-600" />
-                <span className="font-semibold text-gray-700">{user.username}</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <Link
+                to={user.is_teacher ? "/teacher" : "/student"}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 font-medium hover:shadow transition"
+              >
+                <User className="w-5 h-5" />
+                {user.username || user.name}
+              </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1 px-4 py-2 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-all duration-300"
+                className="px-4 py-2 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition"
               >
-                <LogOut className="w-4 h-4" /> Logout
+                <LogOut className="inline-block w-4 h-4 mr-1" /> Logout
               </button>
             </div>
           )}
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-gray-700 focus:outline-none transition-transform duration-300 hover:scale-110"
-        >
-          {isOpen ? <X size={26} /> : <Menu size={26} />}
-        </button>
+        <div className="md:hidden">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 rounded-md hover:bg-gray-100 transition"
+          >
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg py-4 space-y-4 px-6 animate-fade-in">
+      {/* Mobile Dropdown */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-500 ${
+          isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 pb-4 space-y-3 bg-white/90 backdrop-blur-md">
           {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 text-gray-700 text-base font-medium hover:text-indigo-600 transition ${location.pathname === link.path ? "text-indigo-600 font-semibold" : ""
-                }`}
-            >
-              {link.icon}
-              {link.name}
-            </Link>
+            <NavItem key={link.path} link={link} />
           ))}
-
-          {!user ? (
-            <div className="flex space-x-3 pt-4 border-t border-gray-100">
-              <Link
-                to="/login"
-                className="flex items-center justify-center gap-1 w-1/2 text-center py-2 border border-indigo-600 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all duration-300"
-              >
-                <LogIn className="w-4 h-4" /> Login
-              </Link>
-              <Link
-                to="/signup"
-                className="flex items-center justify-center gap-1 w-1/2 text-center py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-300"
-              >
-                <UserPlus className="w-4 h-4" /> Sign Up
-              </Link>
-            </div>
-          ) : (
-            <div className="flex flex-col items-start space-y-3 border-t pt-4">
-              <div className="flex items-center gap-2">
-                <User className="w-5 h-5 text-indigo-600" />
-                <span className="font-semibold">{user.username}</span>
+          <div className="pt-3 border-t border-gray-200">
+            {!user ? (
+              <div className="flex gap-3">
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 py-2 rounded-lg border border-indigo-600 text-center text-indigo-600 font-medium hover:bg-indigo-50 transition"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 py-2 rounded-lg bg-indigo-600 text-white text-center font-semibold hover:bg-indigo-700 transition"
+                >
+                  Sign Up
+                </Link>
               </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 w-full justify-center"
-              >
-                <LogOut className="w-4 h-4" /> Logout
-              </button>
-            </div>
-          )}
+            ) : (
+              <div className="space-y-2">
+                <Link
+                  to={user.is_teacher ? "/teacher" : "/student"}
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 text-indigo-600"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="font-semibold">
+                    {user.username || user.name}
+                  </span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </header>
   );
 };
