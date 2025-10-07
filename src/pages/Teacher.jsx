@@ -19,6 +19,10 @@ const TeacherPage = () => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [className, setClassName] = useState("");
+  const [classCode, setClassCode] = useState("");
+  const [creating, setCreating] = useState(false);
 
   // 🔹 Auth & Initial Load
   useEffect(() => {
@@ -62,32 +66,46 @@ const TeacherPage = () => {
   };
 
   // 🔹 Create Class
-  const handleCreate = async () => {
+  const handleCreate = async (e) => {
+    e.preventDefault();
     const token = localStorage.getItem("access");
-    const name = prompt("Enter class name (e.g., 'Computer Science 2025'):");
-    if (!name || name.trim() === "") return;
+
+    if (!className.trim() || !classCode.trim()) {
+      setError("Please fill in both class name and class code.");
+      return;
+    }
 
     try {
+      setCreating(true);
       const res = await fetch(`${BASE_API}api/classclassrooms/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: name.trim() }),
+        body: JSON.stringify({
+          name: className.trim(),
+          code: classCode.trim(),
+        }),
       });
 
       if (res.ok) {
-        alert("✅ Class created successfully!");
+        setClassName("");
+        setClassCode("");
+        setShowForm(false);
+        setError("");
         fetchClasses(token);
       } else {
         const data = await res.json();
-        alert(
-          `❌ Failed: ${data.name?.[0] || data.detail || "Unexpected error."}`
+        setError(
+          data.name?.[0] || data.code?.[0] || data.detail || "Unexpected error."
         );
       }
-    } catch {
-      alert("Network error occurred. Try again.");
+    } catch (err) {
+      console.error(err);
+      setError("Network error occurred. Try again.");
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -123,7 +141,7 @@ const TeacherPage = () => {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <button
-              onClick={handleCreate}
+              onClick={() => setShowForm(!showForm)}
               className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-lg font-semibold text-sm sm:text-base shadow-md hover:bg-indigo-700 transition-all duration-200 transform hover:scale-[1.02]"
             >
               <PlusCircle className="w-5 h-5" /> New Class
@@ -148,6 +166,36 @@ const TeacherPage = () => {
             </button>
           </div>
         </div>
+
+        {/* Inline Create Class Form */}
+        {showForm && (
+          <form
+            onSubmit={handleCreate}
+            className="mt-5 flex flex-col sm:flex-row gap-3 items-start sm:items-center"
+          >
+            <input
+              type="text"
+              placeholder="Class Name"
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <input
+              type="text"
+              placeholder="Class Code"
+              value={classCode}
+              onChange={(e) => setClassCode(e.target.value)}
+              className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button
+              type="submit"
+              disabled={creating}
+              className="bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-all disabled:opacity-50"
+            >
+              {creating ? "Creating..." : "Create"}
+            </button>
+          </form>
+        )}
       </header>
 
       {/* Class List */}
