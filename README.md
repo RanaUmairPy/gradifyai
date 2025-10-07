@@ -1,16 +1,33 @@
-# React + Vite
+# 📚 GradifyAI — Smarter Academic Automation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+GradifyAI is an AI-powered platform designed to streamline assignment checking, feedback generation, and academic evaluation for students and teachers. Built with React + Vite for blazing-fast performance and modular scalability, GradifyAI combines frontend polish with backend intelligence.
 
-Currently, two official plugins are available:
+## 🚀 Live Site
+Visit [GradifyAI Online](https://www.gradifyai.online) to explore the platform in action.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧠 Core Features
+- ✍️ AI Assignment Checker — NLP-powered scoring logic for student submissions
+- 🧾 Feedback Generator — Context-aware feedback using fine-tuned language models
+- 📊 Analytics Dashboard — Visual insights for teachers and students
+- 🔁 Modular Pipelines — Reproducible ML workflows for training and evaluation
+- 📱 PWA Support — Installable on mobile and desktop for seamless access
 
-## React Compiler
+## 🛠️ Tech Stack
+- Frontend: React + Vite + TailwindCSS
+- Backend: Node.js + Express + Python (ML agents)
+- ML Models: DistilBERT, MiniLM, PEFT techniques
+- Deployment: Vercel + GitHub Actions
+- SEO: Structured meta tags, OpenGraph, and schema markup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🧪 Development Setup
 
-## Expanding the ESLint configuration
+```bash
+# Clone the repo
+git clone https://github.com/RanaUmairPy/gradifyai.git
+cd gradifyai
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
