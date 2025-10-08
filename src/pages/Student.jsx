@@ -139,7 +139,7 @@ const StudentPage = () => {
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900">
                   Welcome,{" "}
                   <span className="text-indigo-600">
-                    {student?.name || "Student"}
+                    {student?.username || "Student"}
                   </span>
                   !
                 </h1>

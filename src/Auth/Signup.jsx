@@ -11,6 +11,9 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
+    roll_number: "",
+    name: "",
+    
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -35,7 +38,7 @@ const Signup = () => {
         
         localStorage.setItem("user_email_for_otp", formData.email); 
 
-        setFormData({ username: "", email: "", password: "" });
+        setFormData({ username: "", email: "", password: "", roll_number: "", name: ""});
 
         setTimeout(() => {
           navigate("/email-confirmation");
@@ -121,6 +124,41 @@ const Signup = () => {
                             type="text"
                             name="username"
                             value={formData.username}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
+                            placeholder="Choose your username"
+                        />
+                    </div>
+                </div>
+                {/* name Field */}
+                <div className="group">
+                    <label className="block text-gray-700 font-medium mb-1 group-focus-within:text-indigo-600 transition-colors">
+                        Your Name
+                    </label>
+                    <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 bg-white focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 transition-all duration-300">
+                        <User className="text-gray-400 group-focus-within:text-indigo-500 w-5 h-5 mr-3 transition-colors" />
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
+                            placeholder="Choose your username"
+                        />
+                    </div>
+                </div>
+                <div className="group">
+                    <label className="block text-gray-700 font-medium mb-1 group-focus-within:text-indigo-600 transition-colors">
+                        Roll Number
+                    </label>
+                    <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 bg-white focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 transition-all duration-300">
+                        <User className="text-gray-400 group-focus-within:text-indigo-500 w-5 h-5 mr-3 transition-colors" />
+                        <input
+                            type="text"
+                            name="roll_number"
+                            value={formData.roll_number}
                             onChange={handleChange}
                             required
                             className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
