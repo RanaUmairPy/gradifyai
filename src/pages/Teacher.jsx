@@ -64,7 +64,8 @@ const TeacherPage = () => {
       setLoading(false);
     }
   };
-
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
+     crossorigin="anonymous"></script>
   // 🔹 Create Class
   const handleCreate = async (e) => {
     e.preventDefault();

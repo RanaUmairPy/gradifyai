@@ -113,7 +113,8 @@ const StudentPage = () => {
       );
     }
   };
-
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
+     crossorigin="anonymous"></script>
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("access");
