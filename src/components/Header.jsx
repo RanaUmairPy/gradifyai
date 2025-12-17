@@ -50,10 +50,9 @@ const Header = () => {
         to={link.path}
         onClick={() => setIsOpen(false)}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 
-          ${
-            isActive
-              ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-sm"
-              : "text-gray-700 hover:text-indigo-600 hover:bg-gray-100"
+          ${isActive
+            ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-sm"
+            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-100"
           }`}
       >
         <Icon className="w-4 h-4" />
@@ -80,11 +79,14 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
-          <nav className="flex items-center gap-2">
-            {navLinks.map((l) => (
-              <NavItem key={l.path} link={l} />
-            ))}
-          </nav>
+          {/* Only show public nav links if NOT logged in */}
+          {!user && (
+            <nav className="flex items-center gap-2">
+              {navLinks.map((l) => (
+                <NavItem key={l.path} link={l} />
+              ))}
+            </nav>
+          )}
 
           {/* Auth */}
           {!user ? (
@@ -105,19 +107,24 @@ const Header = () => {
               </Link>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              <div className="text-right hidden lg:block">
+                <p className="text-sm font-bold text-gray-800">{user.username || user.name}</p>
+                <p className="text-xs text-gray-500 font-medium">{user.email}</p>
+              </div>
               <Link
                 to={user.is_teacher ? "/teacher" : "/student"}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 font-medium hover:shadow transition"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-bold hover:shadow-md transition"
+                title="Dashboard"
               >
                 <User className="w-5 h-5" />
-                {user.username || user.name}
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition"
+                className="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
+                title="Logout"
               >
-                <LogOut className="inline-block w-4 h-4 mr-1" /> Logout
+                <LogOut className="w-5 h-5" />
               </button>
             </div>
           )}
@@ -136,12 +143,11 @@ const Header = () => {
 
       {/* Mobile Dropdown */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-500 ${
-          isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`md:hidden overflow-hidden transition-all duration-500 ${isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="px-4 pb-4 space-y-3 bg-white/90 backdrop-blur-md">
-          {navLinks.map((link) => (
+          {!user && navLinks.map((link) => (
             <NavItem key={link.path} link={link} />
           ))}
           <div className="pt-3 border-t border-gray-200">
@@ -170,9 +176,14 @@ const Header = () => {
                   className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 text-indigo-600"
                 >
                   <User className="w-5 h-5" />
-                  <span className="font-semibold">
-                    {user.username || user.name}
-                  </span>
+                  <div className="flex flex-col text-left">
+                    <span className="font-semibold">
+                      {user.username || user.name}
+                    </span>
+                    <span className="text-xs text-indigo-400">
+                      {user.email}
+                    </span>
+                  </div>
                 </Link>
                 <button
                   onClick={handleLogout}

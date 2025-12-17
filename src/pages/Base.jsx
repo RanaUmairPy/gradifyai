@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, matchPath } from "react-router-dom";
 import Header from "../components/Header";
 import TeacherPage from "./Teacher";
 import StudentPage from "./Student";
 import Home from "./Home";
 import About from "./About";
-import Features from "./Features"; 
-import PrivacyPolicy from "./PrivacyPolicy"; 
-import Contact from "./Contact"; 
+import Features from "./Features";
+import PrivacyPolicy from "./PrivacyPolicy";
+import Contact from "./Contact";
+import ClassRoom from "./ClassRoom";
+import AssignmentDetails from "./AssignmentDetails";
+import AssignmentSubmissions from "./AssignmentSubmissions";
 
 const Base = () => {
   const navigate = useNavigate();
@@ -46,20 +49,35 @@ const Base = () => {
   // ✅ Decide which page to render based on path and user status
   let content;
 
+  // Check for specific routes
+  const matchStudentClass = matchPath("/student/class/:id", location.pathname);
+  const matchTeacherClass = matchPath("/teacher/class/:id", location.pathname);
+  const matchAssignment = matchPath("/student/assignment/:id", location.pathname);
+  const matchTeacherAssignment = matchPath("/teacher/assignment/:id", location.pathname);
+  const matchSubmission = matchPath("/teacher/assignment/:id/submissions", location.pathname);
+
   if (location.pathname === "/about") {
     content = <About />;
   } else if (location.pathname === "/features") {
     content = <Features />;
   } else if (location.pathname === "/privacy") {
     content = <PrivacyPolicy />;
-  } else if (location.pathname === "/contact") { 
+  } else if (location.pathname === "/contact") {
     content = <Contact />;
   } else if (!user) {
-    content = <Home />; // Public Home Page (for all other public routes like /login, the component should handle routing)
+    content = <Home />; // Public Home Page
+  } else if (matchSubmission) {
+    content = <AssignmentSubmissions />;
+  } else if (matchAssignment || matchTeacherAssignment) {
+    // Both teacher and student can view assignment details, mainly useful for students to submit and teachers to see overview
+    content = <AssignmentDetails assignmentId={matchAssignment?.params.id || matchTeacherAssignment?.params.id} />;
+  } else if (matchStudentClass || matchTeacherClass) {
+    const classId = matchStudentClass?.params.id || matchTeacherClass?.params.id;
+    content = <ClassRoom classId={classId} />;
   } else if (user?.is_teacher) {
-    content = <TeacherPage />; // Teacher Dashboard
+    content = <TeacherPage />;
   } else {
-    content = <StudentPage />; // Student Dashboard
+    content = <StudentPage />;
   }
 
   // Note: For public pages (About, Features, Privacy, Contact), the page content
