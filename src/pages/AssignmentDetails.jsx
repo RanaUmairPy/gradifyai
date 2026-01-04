@@ -255,25 +255,43 @@ const AssignmentDetails = ({ assignmentId }) => {
                             </button>
                         </div>
                     ) : (
-                        <div className={`bg-white rounded-2xl shadow-lg border p-8 ${submissionSuccess ? "border-green-200" : "border-indigo-100"}`}>
+                        <div className={`bg-white rounded-2xl shadow-lg border p-8 ${submissionSuccess || mySubmission ? "border-green-200" : "border-indigo-100"}`}>
                             <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                                 <Upload className="w-6 h-6 text-indigo-600" />
                                 Submit Assignment
                             </h3>
 
-                            {submissionSuccess ? (
+                            {submissionSuccess || mySubmission ? (
                                 <div className="text-center py-6">
                                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <CheckCircle className="w-8 h-8 text-green-600" />
                                     </div>
                                     <h4 className="text-lg font-bold text-green-700">Submitted!</h4>
                                     <p className="text-gray-500 mt-2">Your work has been uploaded successfully.</p>
-                                    <button
-                                        onClick={() => setSubmissionSuccess(false)}
-                                        className="mt-6 text-indigo-600 underline text-sm"
-                                    >
-                                        Submit again?
-                                    </button>
+
+                                    {mySubmission && (
+                                        <div className="mt-6 bg-gray-50 rounded-xl p-4 text-left space-y-3 border border-gray-200">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-gray-500">Submitted on:</span>
+                                                <span className="font-medium text-gray-800">{formatDate(mySubmission.created_at || mySubmission.submitted_at)}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-gray-500">File:</span>
+                                                <a href={mySubmission.submitted_file} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline truncate max-w-[150px] font-medium">View File</a>
+                                            </div>
+                                            <div className="border-t border-gray-200 my-2 pt-3 flex justify-between items-center">
+                                                <span className="text-gray-700 font-bold">Marks:</span>
+                                                <span className={`font-bold text-lg ${mySubmission.marks ? "text-indigo-600" : "text-gray-400"}`}>
+                                                    {mySubmission.marks !== undefined && mySubmission.marks !== null ? `${mySubmission.marks} / ${assignment.max_marks}` : "Pending"}
+                                                </span>
+                                            </div>
+                                            {mySubmission.feedback && (
+                                                <div className="mt-2 text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                                                    <strong className="block text-gray-700 mb-1">Feedback:</strong> {mySubmission.feedback}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmission} className="space-y-6">
