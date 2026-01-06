@@ -64,8 +64,8 @@ const TeacherPage = () => {
       setLoading(false);
     }
   };
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
+    crossorigin="anonymous"></script>
   // 🔹 Create Class
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -119,85 +119,10 @@ const TeacherPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 lg:p-12 space-y-8 sm:space-y-10 transition-all">
       {/* Header */}
-      <header className="bg-white rounded-2xl shadow-lg border-t-8 border-indigo-600 p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
-          {/* Teacher Info */}
-          <div className="flex items-center gap-4 sm:gap-5 flex-grow">
-            <div className="p-3 bg-indigo-100 rounded-full border-4 border-indigo-50 flex-shrink-0">
-              <User className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-600" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight">
-                Welcome,{" "}
-                <span className="text-indigo-600">
-                  {teacher?.name || "Teacher"}
-                </span>
-              </h1>
-              <p className="text-gray-500 text-sm sm:text-base mt-1 font-medium">
-                {teacher?.email || "teacher@gradify.ai"}
-              </p>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-5 py-3 rounded-lg font-semibold text-sm sm:text-base shadow-md hover:bg-indigo-700 transition-all duration-200 transform hover:scale-[1.02]"
-            >
-              <PlusCircle className="w-5 h-5" /> New Class
-            </button>
-
-            <button
-              onClick={() => fetchClasses(localStorage.getItem("access"))}
-              disabled={loading}
-              className="flex items-center justify-center gap-2 border border-indigo-300 text-indigo-700 px-5 py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-indigo-50 transition-all w-full sm:w-auto"
-            >
-              <RefreshCcw
-                className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-              />
-              {loading ? "Refreshing..." : "Refresh"}
-            </button>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-5 py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-red-50 hover:text-red-700 transition-all"
-            >
-              <LogOut className="w-5 h-5" /> Logout
-            </button>
-          </div>
-        </div>
-
-        {/* Inline Create Class Form */}
-        {showForm && (
-          <form
-            onSubmit={handleCreate}
-            className="mt-5 flex flex-col sm:flex-row gap-3 items-start sm:items-center"
-          >
-            <input
-              type="text"
-              placeholder="Class Name"
-              value={className}
-              onChange={(e) => setClassName(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <input
-              type="text"
-              placeholder="Class Code"
-              value={classCode}
-              onChange={(e) => setClassCode(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-1/3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <button
-              type="submit"
-              disabled={creating}
-              className="bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-all disabled:opacity-50"
-            >
-              {creating ? "Creating..." : "Create"}
-            </button>
-          </form>
-        )}
-      </header>
+      {/* Header Removed */}
+      <h1 className="text-2xl font-bold bg-white p-4 rounded-xl shadow-sm border-l-4 border-indigo-600">
+        Dashboard
+      </h1>
 
       {/* Class List */}
       <section>

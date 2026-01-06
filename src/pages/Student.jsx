@@ -113,8 +113,8 @@ const StudentPage = () => {
       );
     }
   };
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
+    crossorigin="anonymous"></script>
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("access");
@@ -128,57 +128,10 @@ const StudentPage = () => {
 
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 space-y-8">
         {/* ===================== HEADER ===================== */}
-        <header className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 border-l-8 border-indigo-600">
-          <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-            {/* Student Info */}
-            <div className="flex items-center gap-4 flex-grow w-full sm:w-auto">
-              <div className="p-3 bg-indigo-100 rounded-full border-4 border-indigo-50 flex-shrink-0">
-                <UserCircle className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-600" />
-              </div>
-              <div className="flex flex-col">
-                {/* ✅ Changed Text to “Welcome, Username!” */}
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900">
-                  Welcome,{" "}
-                  <span className="text-indigo-600">
-                    {student?.username || "Student"}
-                  </span>
-                  !
-                </h1>
-                <p className="text-gray-500 text-xs sm:text-sm mt-1 font-medium truncate">
-                  {student?.email || "student@domain.com"}
-                </p>
-              </div>
-            </div>
-
-            {/* Action Buttons (Mobile friendly) */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto mt-4 xl:mt-0">
-              <button
-                onClick={handleJoin}
-                className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-3 rounded-lg font-bold text-sm sm:text-base shadow-md hover:bg-indigo-700 transition-all w-full sm:w-auto"
-              >
-                <LogIn className="w-5 h-5" /> Join New Class
-              </button>
-
-              <button
-                onClick={() => fetchJoinedClasses(localStorage.getItem("access"))}
-                className="flex items-center justify-center gap-2 border border-indigo-300 text-indigo-600 px-4 py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-indigo-50 transition-all w-full sm:w-auto"
-                disabled={loading}
-              >
-                <RefreshCcw
-                  className={`w-5 h-5 ${loading ? "animate-spin" : ""}`}
-                />
-                {loading ? "Refreshing..." : "Refresh"}
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-2 border border-red-300 text-red-600 px-4 py-3 rounded-lg font-semibold text-sm sm:text-base hover:bg-red-50 transition-all w-full sm:w-auto"
-              >
-                <XCircle className="w-5 h-5" /> Logout
-              </button>
-            </div>
-          </div>
-        </header>
+        {/* ===================== HEADER REMOVED - NOW IN GLOBAL HEADER ===================== */}
+        <h1 className="text-2xl font-bold bg-white p-4 rounded-xl shadow-sm border-l-4 border-indigo-600">
+          Dashboard
+        </h1>
 
         <hr className="border-gray-200" />
 
@@ -206,22 +159,20 @@ const StudentPage = () => {
               <div className="flex rounded-lg overflow-hidden border border-gray-300 self-center">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 ${
-                    viewMode === "grid"
+                  className={`p-2 ${viewMode === "grid"
                       ? "bg-indigo-600 text-white"
                       : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
+                    }`}
                   title="Grid View"
                 >
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 border-l ${
-                    viewMode === "list"
+                  className={`p-2 border-l ${viewMode === "list"
                       ? "bg-indigo-600 text-white"
                       : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
+                    }`}
                   title="List View"
                 >
                   <Layers className="w-5 h-5" />
@@ -277,20 +228,18 @@ const StudentPage = () => {
 
           {!loading && filteredClasses.length > 0 && (
             <div
-              className={`${
-                viewMode === "grid"
+              className={`${viewMode === "grid"
                   ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                   : "space-y-4"
-              }`}
+                }`}
             >
               {filteredClasses.map((cls) => (
                 <div
                   key={cls.id}
-                  className={`bg-white rounded-xl p-5 shadow-md border-l-4 transition-all cursor-pointer ${
-                    viewMode === "grid"
+                  className={`bg-white rounded-xl p-5 shadow-md border-l-4 transition-all cursor-pointer ${viewMode === "grid"
                       ? "border-indigo-200 hover:border-indigo-600 hover:shadow-lg"
                       : "border-indigo-400 hover:bg-indigo-50"
-                  }`}
+                    }`}
                   onClick={() => navigate(`/student/class/${cls.id}`)}
                 >
                   <div className="flex justify-between items-start mb-3">

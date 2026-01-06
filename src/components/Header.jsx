@@ -28,8 +28,7 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("access");
+    localStorage.clear();
     setUser(null);
     navigate("/");
   };
@@ -108,17 +107,49 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <div className="text-right hidden lg:block">
-                <p className="text-sm font-bold text-gray-800">{user.username || user.name}</p>
-                <p className="text-xs text-gray-500 font-medium">{user.email}</p>
-              </div>
+              {/* 1. Teacher Action: Create New Class */}
+              {user.is_teacher && (
+                <Link
+                  to="/teacher/create-class"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400 transition shadow-sm"
+                  title="Create New Class"
+                >
+                  <img src="/studyroom.png" alt="Class" className="w-6 h-6 object-contain" />
+                  <span className="text-sm font-semibold">Create New Class</span>
+                </Link>
+              )}
+
+              {/* 1. Student Action: Join Class */}
+              {!user.is_teacher && (
+                <Link
+                  to="/student/join-class"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400 transition shadow-sm"
+                  title="Join New Class"
+                >
+                  <img src="/studyroom.png" alt="Class" className="w-6 h-6 object-contain" />
+                  <span className="text-sm font-semibold">Join Class</span>
+                </Link>
+              )}
+
+              {/* 2. User Avatar (Dashboard Link) */}
               <Link
                 to={user.is_teacher ? "/teacher" : "/student"}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-bold hover:shadow-md transition"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-bold hover:shadow-md transition overflow-hidden border border-indigo-200"
                 title="Dashboard"
               >
-                <User className="w-5 h-5" />
+                <img src="/user.png" alt="Profile" className="w-full h-full object-cover" />
               </Link>
+
+              {/* 3. User Info */}
+              <div className="hidden lg:block text-left">
+                <p className="text-sm font-bold text-gray-800">{user.username || user.name}</p>
+                <p className="text-xs text-gray-500 font-medium">{user.email}</p>
+                <p className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-0.5">
+                  {user.is_teacher ? "Teacher" : "Student"}
+                </p>
+              </div>
+
+              {/* 4. Logout */}
               <button
                 onClick={handleLogout}
                 className="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
@@ -175,7 +206,7 @@ const Header = () => {
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 text-indigo-600"
                 >
-                  <User className="w-5 h-5" />
+                  <img src="/user.png" alt="Profile" className="w-8 h-8 rounded-full object-cover border border-indigo-200" />
                   <div className="flex flex-col text-left">
                     <span className="font-semibold">
                       {user.username || user.name}

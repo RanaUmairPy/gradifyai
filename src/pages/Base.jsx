@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation, matchPath } from "react-router-dom";
+import { useNavigate, useLocation, Routes, Route, Navigate } from "react-router-dom";
 import Header from "../components/Header";
 import TeacherPage from "./Teacher";
 import StudentPage from "./Student";
@@ -11,6 +11,8 @@ import Contact from "./Contact";
 import ClassRoom from "./ClassRoom";
 import AssignmentDetails from "./AssignmentDetails";
 import AssignmentSubmissions from "./AssignmentSubmissions";
+import CreateClass from "./CreateClass";
+import JoinClass from "./JoinClass";
 
 const Base = () => {
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ const Base = () => {
 
     setUser(storedUser);
     setLoading(false);
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   const theme = {
     bg: "bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-200",
@@ -46,43 +48,6 @@ const Base = () => {
     );
   }
 
-  // ✅ Decide which page to render based on path and user status
-  let content;
-
-  // Check for specific routes
-  const matchStudentClass = matchPath("/student/class/:id", location.pathname);
-  const matchTeacherClass = matchPath("/teacher/class/:id", location.pathname);
-  const matchAssignment = matchPath("/student/assignment/:id", location.pathname);
-  const matchTeacherAssignment = matchPath("/teacher/assignment/:id", location.pathname);
-  const matchSubmission = matchPath("/teacher/assignment/:id/submissions", location.pathname);
-
-  if (location.pathname === "/about") {
-    content = <About />;
-  } else if (location.pathname === "/features") {
-    content = <Features />;
-  } else if (location.pathname === "/privacy") {
-    content = <PrivacyPolicy />;
-  } else if (location.pathname === "/contact") {
-    content = <Contact />;
-  } else if (!user) {
-    content = <Home />; // Public Home Page
-  } else if (matchSubmission) {
-    content = <AssignmentSubmissions />;
-  } else if (matchAssignment || matchTeacherAssignment) {
-    // Both teacher and student can view assignment details, mainly useful for students to submit and teachers to see overview
-    content = <AssignmentDetails assignmentId={matchAssignment?.params.id || matchTeacherAssignment?.params.id} />;
-  } else if (matchStudentClass || matchTeacherClass) {
-    const classId = matchStudentClass?.params.id || matchTeacherClass?.params.id;
-    content = <ClassRoom classId={classId} />;
-  } else if (user?.is_teacher) {
-    content = <TeacherPage />;
-  } else {
-    content = <StudentPage />;
-  }
-
-  // Note: For public pages (About, Features, Privacy, Contact), the page content
-  // will now span the full width of the 'main' container (max-w-7xl).
-
   return (
     <div className={`min-h-screen flex flex-col ${theme.bg}`}>
       {/* Header always visible */}
@@ -92,7 +57,37 @@ const Base = () => {
 
       {/* Main Content */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
-        {content}
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/contact" element={<Contact />} />
+
+          {/* New Class Routes */}
+          <Route path="/teacher/create-class" element={user?.is_teacher ? <CreateClass /> : <Navigate to="/" />} />
+          <Route path="/student/join-class" element={!user?.is_teacher ? <JoinClass /> : <Navigate to="/" />} />
+
+          {/* Teacher Assignments Management */}
+          <Route path="/teacher/assignment/:id/submissions" element={<AssignmentSubmissions />} />
+          <Route path="/teacher/assignment/:id" element={<AssignmentDetails />} />
+
+          {/* Student Assignments */}
+          <Route path="/student/assignment/:id" element={<AssignmentDetails />} />
+
+          {/* Classroom Views */}
+          <Route path="/student/class/:id" element={<ClassRoom />} />
+          <Route path="/teacher/class/:id" element={<ClassRoom />} />
+
+          {/* Dashboard / Home */}
+          <Route path="/" element={
+            !user ? <Home /> :
+              user.is_teacher ? <TeacherPage /> : <StudentPage />
+          } />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </main>
 
       {/* Footer always visible */}
