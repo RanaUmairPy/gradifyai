@@ -201,6 +201,31 @@ const Header = () => {
               </div>
             ) : (
               <div className="space-y-2">
+                {/* 1. Teacher Action: Create New Class */}
+                {user.is_teacher && (
+                  <Link
+                    to="/teacher/create-class"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200"
+                  >
+                    <img src="/studyroom.png" alt="Class" className="w-8 h-8 object-contain" />
+                    <span className="font-semibold text-sm">Create New Class</span>
+                  </Link>
+                )}
+
+                {/* 1. Student Action: Join Class */}
+                {!user.is_teacher && (
+                  <Link
+                    to="/student/join-class"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200"
+                  >
+                    <img src="/studyroom.png" alt="Class" className="w-8 h-8 object-contain" />
+                    <span className="font-semibold text-sm">Join Class</span>
+                  </Link>
+                )}
+
+                {/* 2. User Avatar (Dashboard Link) */}
                 <Link
                   to={user.is_teacher ? "/teacher" : "/student"}
                   onClick={() => setIsOpen(false)}
