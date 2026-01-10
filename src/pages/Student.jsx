@@ -34,7 +34,17 @@ const StudentPage = () => {
     }
 
     setStudent(user);
-    fetchJoinedClasses(token);
+
+    // Initial Cache Load
+    const cachedClasses = localStorage.getItem(`student_classes_${user.id}`);
+    if (cachedClasses) {
+      setClasses(JSON.parse(cachedClasses));
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
+    fetchJoinedClasses(token, user.id);
   }, [navigate]);
 
   useEffect(() => {
@@ -48,27 +58,28 @@ const StudentPage = () => {
     setFilteredClasses(results);
   }, [searchTerm, classes]);
 
-  const fetchJoinedClasses = async (token) => {
+  const fetchJoinedClasses = async (token, userId) => {
     try {
-      setLoading(true);
-      setError("");
       const res = await fetch(`${BASE_API}api/classclassrooms/my-classes/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
         const data = await res.json();
-        setClasses(data.joined_classes || data || []);
+        const results = data.joined_classes || data || [];
+        setClasses(results);
+        // Cache data
+        localStorage.setItem(`student_classes_${userId}`, JSON.stringify(results));
       } else {
         const errorData = await res.json();
-        setError(
-          errorData.detail || "Failed to load classes. Status: " + res.status
-        );
+        if (!localStorage.getItem(`student_classes_${userId}`)) {
+          setError(errorData.detail || "Failed to load classes. Status: " + res.status);
+        }
       }
     } catch {
-      setError(
-        "Network error occurred. Please check your connection and try again."
-      );
+      if (!localStorage.getItem(`student_classes_${userId}`)) {
+        setError("Network error occurred. Please check your connection and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -160,8 +171,8 @@ const StudentPage = () => {
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`p-2 ${viewMode === "grid"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white text-gray-600 hover:bg-gray-100"
                     }`}
                   title="Grid View"
                 >
@@ -170,8 +181,8 @@ const StudentPage = () => {
                 <button
                   onClick={() => setViewMode("list")}
                   className={`p-2 border-l ${viewMode === "list"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white text-gray-600 hover:bg-gray-100"
                     }`}
                   title="List View"
                 >
@@ -229,16 +240,16 @@ const StudentPage = () => {
           {!loading && filteredClasses.length > 0 && (
             <div
               className={`${viewMode === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-                  : "space-y-4"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                : "space-y-4"
                 }`}
             >
               {filteredClasses.map((cls) => (
                 <div
                   key={cls.id}
                   className={`bg-white rounded-xl p-5 shadow-md border-l-4 transition-all cursor-pointer ${viewMode === "grid"
-                      ? "border-indigo-200 hover:border-indigo-600 hover:shadow-lg"
-                      : "border-indigo-400 hover:bg-indigo-50"
+                    ? "border-indigo-200 hover:border-indigo-600 hover:shadow-lg"
+                    : "border-indigo-400 hover:bg-indigo-50"
                     }`}
                   onClick={() => navigate(`/student/class/${cls.id}`)}
                 >

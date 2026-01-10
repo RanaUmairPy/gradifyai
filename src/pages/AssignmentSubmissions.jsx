@@ -95,6 +95,10 @@ const AssignmentSubmissions = () => {
                                 <tr>
                                     <th className="p-4 font-semibold text-gray-600">Student ID</th>
                                     <th className="p-4 font-semibold text-gray-600">Submitted At</th>
+                                    <th className="p-4 font-semibold text-gray-600">AI Agent Score</th>
+                                    <th className="p-4 font-semibold text-gray-600">Teacher Score</th>
+                                    <th className="p-4 font-semibold text-gray-600">Model Score</th>
+                                    <th className="p-4 font-semibold text-gray-600">Feedback / Plagiarism</th>
                                     <th className="p-4 font-semibold text-gray-600">File</th>
                                     <th className="p-4 font-semibold text-gray-600">Actions</th>
                                 </tr>
@@ -105,13 +109,31 @@ const AssignmentSubmissions = () => {
                                         <td className="p-4">
                                             <div className="flex items-center gap-2 font-medium text-gray-900">
                                                 <User className="w-4 h-4 text-indigo-400" />
-                                                {sub.student || "Unknown Student"}
+                                                {sub.student?.username || sub.student?.name || sub.student || "Unknown"}
                                             </div>
                                         </td>
                                         <td className="p-4 text-gray-500">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-gray-400" />
                                                 {formatDate(sub.created_at || sub.submitted_at)}
+                                            </div>
+                                        </td>
+                                        <td className="p-4">
+                                            <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-semibold border border-blue-100">
+                                                {sub.openai_score !== null ? sub.openai_score : "N/A"}
+                                            </span>
+                                        </td>
+                                        <td className="p-4">
+                                            <span className="inline-block px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs font-semibold border border-purple-100">
+                                                {sub.teacher_marks !== null ? sub.teacher_marks : "N/A"}
+                                            </span>
+                                        </td>
+                                        <td className="p-4 font-bold text-gray-800">
+                                            {sub.marks !== null ? sub.marks : "-"}
+                                        </td>
+                                        <td className="p-4 max-w-xs">
+                                            <div className="text-sm text-gray-600 truncate" title={sub.feedback}>
+                                                {sub.feedback || "No feedback"}
                                             </div>
                                         </td>
                                         <td className="p-4">
@@ -122,7 +144,7 @@ const AssignmentSubmissions = () => {
                                                     rel="noopener noreferrer"
                                                     className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium"
                                                 >
-                                                    <FileText className="w-4 h-4" /> View File
+                                                    <FileText className="w-4 h-4" /> View
                                                 </a>
                                             ) : (
                                                 <span className="text-gray-400 italic">No file</span>

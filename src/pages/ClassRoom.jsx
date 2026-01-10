@@ -5,6 +5,7 @@ import {
     Plus,
     X,
     AlertCircle,
+    Download,
 } from "lucide-react";
 import BASE_API from "../BaseApi";
 import AssignmentForm from "../components/AssignmentForm";
@@ -189,13 +190,42 @@ const ClassRoom = ({ classId }) => {
                     </p>
                 </div>
                 {user?.is_teacher && (
-                    <button
-                        onClick={() => setShowForm(!showForm)}
-                        className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold shadow hover:bg-indigo-700 transition-all"
-                    >
-                        {showForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                        {showForm ? "Cancel" : "Create Assignment"}
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                            onClick={async () => {
+                                const token = localStorage.getItem("access");
+                                try {
+                                    const res = await fetch(`${BASE_API}api/classclassrooms/${id}/generate-result-csv/`, {
+                                        headers: { Authorization: `Bearer ${token}` },
+                                    });
+                                    if (res.ok) {
+                                        const blob = await res.blob();
+                                        const url = window.URL.createObjectURL(blob);
+                                        const a = document.createElement("a");
+                                        a.href = url;
+                                        a.download = `classroom_results_${id}.csv`;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        a.remove();
+                                    } else {
+                                        alert("Failed to download results. ensure there are submissions.");
+                                    }
+                                } catch (err) {
+                                    alert("Error downloading file.");
+                                }
+                            }}
+                            className="flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-lg font-bold shadow hover:bg-green-700 transition-all"
+                        >
+                            <Download className="w-5 h-5" /> Download Results
+                        </button>
+                        <button
+                            onClick={() => setShowForm(!showForm)}
+                            className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold shadow hover:bg-indigo-700 transition-all"
+                        >
+                            {showForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                            {showForm ? "Cancel" : "Create Assignment"}
+                        </button>
+                    </div>
                 )}
             </header>
 

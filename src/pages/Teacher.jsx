@@ -35,31 +35,45 @@ const TeacherPage = () => {
     }
 
     setTeacher(user);
-    fetchClasses(token);
+
+    // Initial Cache Load
+    const cachedClasses = localStorage.getItem(`teacher_classes_${user.id}`);
+    if (cachedClasses) {
+      setClasses(JSON.parse(cachedClasses));
+      setLoading(false); // Don't show loading if we have cache
+    } else {
+      setLoading(true); // Show loading only if no cache
+    }
+
+    fetchClasses(token, user.id);
   }, [navigate]);
 
   // 🔹 Fetch classes
-  const fetchClasses = async (token) => {
+  const fetchClasses = async (token, userId) => {
     try {
-      setLoading(true);
-      setError("");
       const res = await fetch(`${BASE_API}api/classclassrooms/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
         const data = await res.json();
-        const currentUserId = Number(JSON.parse(localStorage.getItem("user")).id);
+        const currentUserId = Number(userId);
         const teacherClasses = data.filter(
           (cls) => cls.created_by && Number(cls.created_by.id) === currentUserId
         );
         setClasses(teacherClasses);
+        // Update Cache
+        localStorage.setItem(`teacher_classes_${userId}`, JSON.stringify(teacherClasses));
       } else {
         const errorData = await res.json();
-        setError(errorData.detail || "Failed to load classes from server.");
+        if (!localStorage.getItem(`teacher_classes_${userId}`)) {
+          setError(errorData.detail || "Failed to load classes from server.");
+        }
       }
     } catch {
-      setError("Network error occurred. Please check your connection.");
+      if (!localStorage.getItem(`teacher_classes_${userId}`)) {
+        setError("Network error occurred. Please check your connection.");
+      }
     } finally {
       setLoading(false);
     }

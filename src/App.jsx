@@ -9,9 +9,12 @@ import Login from "./Auth/Login";
 import Signup from "./Auth/Signup"; // 👈 Add this import
 import EmailConfirmation from "./Auth/EmailConfirmation"; // 👈 Add this import
 
+import ScrollToTop from "./components/ScrollToTop";
+
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Authentication routes that don't use the main layout */}
         <Route path="/login" element={<Login />} />

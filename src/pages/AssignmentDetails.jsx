@@ -68,27 +68,13 @@ const AssignmentDetails = ({ assignmentId }) => {
                     if (subRes.ok) {
                         const subData = await subRes.json();
                         // Filter for the current user's submission
-                        const mySub = subData.find(s => s.student === cu.username || s.student_id === cu.id);
-                        // If backend returns student name string, we might need a robust way if there are duplicates names,
-                        // ideally backend filters by student=ID. 
-                        // Assuming the API returns a list, and we find one relevant to us.
-                        // Or if backend supports ?student=ID filtering:
-                        // const subRes = await fetch(`${BASE_API}api/classsubmissions/?assignment_id=${id}&student=${cu.id}`);
+                        // The serializer returns 'student' as a nested User object, so we access s.student.username or s.student.id
+                        const mine = subData.find(s =>
+                            (s.student?.id === cu.id) ||
+                            (s.student?.username === cu.username) ||
+                            (s.student === cu.id) // Fallback if it returns just ID
+                        );
 
-                        // For now, let's assume we filter the list client side or use the first one if the API filters by auth user implicitly (unlikely).
-                        // Let's iterate. The user object has 'id' and 'username'.
-                        // API returns: student (username?), student_id? 
-
-                        // Let's blindly check if we find any match or if the list is just MINE.
-                        // Common pattern: Students only see their own. Teachers see all.
-                        // But since we built the teacher view using the SAME endpoint, it likely returns ALL.
-                        // So we MUST filter.
-                        const mine = subData.find(s => s.student === cu.id || s.student === cu.username || (s.student_details && s.student_details.id === cu.id));
-                        // Since we don't know exact schema of 'student' field in response (id or username), we try both or rely on what we saw earlier (it showed student username/name likely).
-                        // We will rely on simple check if we find *any* if we assume students shouldn't see others. 
-                        // But wait, the teacher view relied on this endpoint to see ALL. So a student calling it without filter might see ALL too? That would be a security flaw in backend, but we must handle UI.
-
-                        // Optimization: Check for student ID match if available, else username.
                         if (mine) setMySubmission(mine);
                         // If the backend filters for us (ideal), setMySubmission(subData[0]).
                         // Let's assume we filter.
@@ -279,15 +265,32 @@ const AssignmentDetails = ({ assignmentId }) => {
                                                 <span className="text-gray-500">File:</span>
                                                 <a href={mySubmission.submitted_file} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline truncate max-w-[150px] font-medium">View File</a>
                                             </div>
+
+                                            <div className="grid grid-cols-2 gap-3 mt-4 border-t border-gray-200 pt-3">
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
+                                                    <span className="block text-xs text-gray-500 uppercase font-semibold">AI Agent Score</span>
+                                                    <span className="text-lg font-bold text-blue-600">
+                                                        {mySubmission.openai_score !== null ? mySubmission.openai_score : "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
+                                                    <span className="block text-xs text-gray-500 uppercase font-semibold">Teacher Marks</span>
+                                                    <span className="text-lg font-bold text-purple-600">
+                                                        {mySubmission.teacher_marks !== null ? mySubmission.teacher_marks : "Pending"}
+                                                    </span>
+                                                </div>
+                                            </div>
+
                                             <div className="border-t border-gray-200 my-2 pt-3 flex justify-between items-center">
-                                                <span className="text-gray-700 font-bold">Marks:</span>
+                                                <span className="text-gray-700 font-bold">Model Score:</span>
                                                 <span className={`font-bold text-lg ${mySubmission.marks ? "text-indigo-600" : "text-gray-400"}`}>
                                                     {mySubmission.marks !== undefined && mySubmission.marks !== null ? `${mySubmission.marks} / ${assignment.max_marks}` : "Pending"}
                                                 </span>
                                             </div>
                                             {mySubmission.feedback && (
                                                 <div className="mt-2 text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-                                                    <strong className="block text-gray-700 mb-1">Feedback:</strong> {mySubmission.feedback}
+                                                    <strong className="block text-gray-700 mb-1">Feedback / Plagiarism Report:</strong>
+                                                    <p className="whitespace-pre-line">{mySubmission.feedback}</p>
                                                 </div>
                                             )}
                                         </div>
