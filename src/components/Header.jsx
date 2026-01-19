@@ -15,23 +15,11 @@ import {
   Shield,
 } from "lucide-react";
 
-const Header = () => {
+const Header = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Load user on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
-    navigate("/");
-  };
 
   const navLinks = [
     { name: "Home", path: "/", icon: BookOpen },
@@ -151,7 +139,7 @@ const Header = () => {
 
               {/* 4. Logout */}
               <button
-                onClick={handleLogout}
+                onClick={onLogout}
                 className="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition"
                 title="Logout"
               >
@@ -242,7 +230,7 @@ const Header = () => {
                   </div>
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={onLogout}
                   className="w-full py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
                 >
                   Logout

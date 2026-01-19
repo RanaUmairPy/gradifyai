@@ -35,6 +35,12 @@ const Base = () => {
     setLoading(false);
   }, [navigate, location.pathname]);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    navigate("/");
+  };
+
   const theme = {
     bg: "bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-200",
     header: "bg-white/80 backdrop-blur-md border-b border-indigo-100 shadow-md",
@@ -52,7 +58,7 @@ const Base = () => {
     <div className={`min-h-screen flex flex-col ${theme.bg}`}>
       {/* Header always visible */}
       <header className={`sticky top-0 z-50 ${theme.header}`}>
-        <Header />
+        <Header user={user} onLogout={handleLogout} />
       </header>
 
       {/* Main Content */}

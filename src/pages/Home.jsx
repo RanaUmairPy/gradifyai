@@ -27,34 +27,34 @@ const marketingFeatures = [
 
 // --- How It Works Data ---
 const howItWorksSteps = [
-    {
-        icon: UploadCloud,
-        title: "1. Upload Assignment",
-        description: "Teachers upload the assignment file and define the grading rubric once.",
-        color: "text-indigo-600",
-    },
-    {
-        icon: Brain,
-        title: "2. AI Auto-Evaluation",
-        description: "Our intelligent AI processes the submissions instantly against the defined criteria.",
-        color: "text-purple-600",
-    },
-    {
-        icon: MessageSquare,
-        title: "3. Deliver Feedback",
-        description: "Students receive the grade and detailed, constructive feedback immediately.",
-        color: "text-red-600",
-    },
-    {
-        icon: Monitor,
-        title: "4. Track & Analyze",
-        description: "Use the dashboard to monitor class performance and identify areas for improvement.",
-        color: "text-teal-600",
-    },
+  {
+    icon: UploadCloud,
+    title: "1. Upload Assignment",
+    description: "Teachers upload the assignment file and define the grading rubric once.",
+    color: "text-indigo-600",
+  },
+  {
+    icon: Brain,
+    title: "2. AI Auto-Evaluation",
+    description: "Our intelligent AI processes the submissions instantly against the defined criteria.",
+    color: "text-purple-600",
+  },
+  {
+    icon: MessageSquare,
+    title: "3. Deliver Feedback",
+    description: "Students receive the grade and detailed, constructive feedback immediately.",
+    color: "text-red-600",
+  },
+  {
+    icon: Monitor,
+    title: "4. Track & Analyze",
+    description: "Use the dashboard to monitor class performance and identify areas for improvement.",
+    color: "text-teal-600",
+  },
 ];
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-     crossorigin="anonymous"></script>
+  crossorigin="anonymous"></script>
 const Home = () => {
   useEffect(() => {
     // --- SEO Logic (Kept intact and robust) ---
@@ -67,15 +67,15 @@ const Home = () => {
       "GradifyAI, Assignment Checker AI, AI Grading Tool, AI Homework Checker, Education AI, Teacher Dashboard, Student Portal, Online Learning, Smart Evaluation, Gradify Edu, AI for Education";
 
     const updateMetaTag = (selector, attribute, content) => {
-        let tag = document.querySelector(selector);
-        if (tag) {
-            tag.setAttribute(attribute, content);
-        } else {
-            tag = document.createElement("meta");
-            tag.setAttribute(attribute, selector.includes('name') ? 'name' : 'property');
-            tag.content = content;
-            document.head.appendChild(tag);
-        }
+      let tag = document.querySelector(selector);
+      if (tag) {
+        tag.setAttribute(attribute, content);
+      } else {
+        tag = document.createElement("meta");
+        tag.setAttribute(attribute, selector.includes('name') ? 'name' : 'property');
+        tag.content = content;
+        document.head.appendChild(tag);
+      }
     };
 
     updateMetaTag('meta[name="description"]', 'content', description);
@@ -95,7 +95,7 @@ const Home = () => {
     ];
 
     ogData.forEach(({ property, content }) => {
-        updateMetaTag(`meta[property="${property}"]`, 'content', content);
+      updateMetaTag(`meta[property="${property}"]`, 'content', content);
     });
 
   }, []);
@@ -103,25 +103,15 @@ const Home = () => {
   return (
     // Clean, light, professional base with full mobile responsiveness
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      
-      {/* 1. NAVIGATION (Clean: Login/Signup removed) */}
-      <nav className="border-b border-gray-200 py-4 bg-white sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold text-indigo-700 flex items-center gap-2">
-            <BookCheck size={32} className="text-purple-600" />
-            GradifyAI
-          </Link>
-          <div className="text-gray-500 text-sm hidden sm:block">
-            Smarter Grading. More Time for Teaching.
-          </div>
-        </div>
-      </nav>
+
+      {/* Navigation removed to prevent double headers - handled by Base.jsx */}
+
 
       <main className="container mx-auto px-4 py-10 sm:py-16">
-        
+
         {/* ======================= HERO SECTION (The main pitch) ======================= */}
         <section className="text-center max-w-5xl mx-auto mb-20">
-          
+
           {/* Headline - Premium look with gradient and extra bold font */}
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold mb-6 leading-tight text-gray-900">
             Automate Grading with <br className="sm:hidden" />
@@ -151,7 +141,7 @@ const Home = () => {
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-gray-900">
             Why Educators Are Choosing AI
           </h2>
-          
+
           {/* Grid Layout for Features - Professional Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {marketingFeatures.map((feature, index) => (
@@ -174,45 +164,45 @@ const Home = () => {
 
         {/* ======================= HOW IT WORKS (Working Flow) ======================= */}
         <section className="mt-24 mb-20 bg-white p-10 sm:p-16 rounded-3xl shadow-2xl border border-gray-100">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-900 mb-14">
-                How GradifyAI Works in 4 Simple Steps
-            </h2>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-                {howItWorksSteps.map((step, index) => (
-                    <div key={index} className="text-center">
-                        <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-gray-100 border-4 border-white shadow-md`}>
-                            <step.icon size={32} className={`${step.color}`} />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">
-                            {step.title}
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                            {step.description}
-                        </p>
-                    </div>
-                ))}
-            </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-900 mb-14">
+            How GradifyAI Works in 4 Simple Steps
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {howItWorksSteps.map((step, index) => (
+              <div key={index} className="text-center">
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-gray-100 border-4 border-white shadow-md`}>
+                  <step.icon size={32} className={`${step.color}`} />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
 
 
         {/* ======================= FINAL CTA BLOCK ======================= */}
         <section className="mt-20 sm:mt-32 text-center bg-indigo-600 p-10 sm:p-16 rounded-3xl shadow-2xl shadow-indigo-500/50">
-            <h2 className="text-4xl font-extrabold text-white mb-4">
-                Ready to Simplify Your Grading?
-            </h2>
-            <p className="text-xl text-indigo-100 mb-8">
-                Join thousands of educators saving hours every week. Setup takes less than 2 minutes.
-            </p>
-            <Link
-              to="/signup"
-              // Final CTA: High-impact and inviting
-              className="bg-white text-indigo-700 font-extrabold px-10 py-4 rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.05] inline-flex items-center gap-2 text-xl"
-            >
-              <Brain size={22} /> Get Started Now
-            </Link>
+          <h2 className="text-4xl font-extrabold text-white mb-4">
+            Ready to Simplify Your Grading?
+          </h2>
+          <p className="text-xl text-indigo-100 mb-8">
+            Join thousands of educators saving hours every week. Setup takes less than 2 minutes.
+          </p>
+          <Link
+            to="/signup"
+            // Final CTA: High-impact and inviting
+            className="bg-white text-indigo-700 font-extrabold px-10 py-4 rounded-xl shadow-lg transition duration-300 transform hover:scale-[1.05] inline-flex items-center gap-2 text-xl"
+          >
+            <Brain size={22} /> Get Started Now
+          </Link>
         </section>
-        
+
       </main>
     </div>
   );

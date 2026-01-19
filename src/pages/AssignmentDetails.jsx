@@ -124,6 +124,8 @@ const AssignmentDetails = ({ assignmentId }) => {
                 setSubmissionSuccess(true);
                 setSubmissionFile(null);
                 alert("Assignment submitted successfully!");
+                // Auto-refresh to show marks and submission info
+                fetchAssignmentDetails(token);
             } else {
                 const errData = await res.json();
                 setSubmissionError(JSON.stringify(errData) || "Failed to submit assignment.");
@@ -211,7 +213,7 @@ const AssignmentDetails = ({ assignmentId }) => {
                             <p className="whitespace-pre-wrap">{assignment.description}</p>
                         </div>
 
-                        {assignment.file && (
+                        {isTeacher && assignment.file && (
                             <div className="flex items-center gap-4">
                                 <a
                                     href={assignment.file}

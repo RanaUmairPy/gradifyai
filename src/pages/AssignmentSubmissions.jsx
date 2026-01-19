@@ -21,6 +21,8 @@ const AssignmentSubmissions = () => {
         fetchSubmissions(token);
     }, [id, navigate]);
 
+    const [gradingScores, setGradingScores] = useState({});
+
     const fetchSubmissions = async (token) => {
         try {
             setLoading(true);
@@ -34,7 +36,6 @@ const AssignmentSubmissions = () => {
             }
 
             // Fetch Submissions
-            // Assuming filter by assignment_id is supported
             const res = await fetch(`${BASE_API}api/classsubmissions/?assignment_id=${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -42,6 +43,13 @@ const AssignmentSubmissions = () => {
             if (res.ok) {
                 const data = await res.json();
                 setSubmissions(data);
+
+                // Initialize grading scores from fetched data
+                const initialScores = {};
+                data.forEach(sub => {
+                    initialScores[sub.id] = sub.teacher_marks || "";
+                });
+                setGradingScores(initialScores);
             } else {
                 setError("Failed to fetch submissions.");
             }
@@ -49,6 +57,36 @@ const AssignmentSubmissions = () => {
             setError("Network error occurred.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleGradeUpdate = async (submissionId) => {
+        const token = localStorage.getItem("access");
+        const score = gradingScores[submissionId];
+
+        try {
+            const res = await fetch(`${BASE_API}api/classsubmissions/${submissionId}/`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ teacher_marks: score })
+            });
+
+            if (res.ok) {
+                const updatedSub = await res.json();
+                // Update local state without re-fetching everything
+                setSubmissions(prev => prev.map(s => s.id === submissionId ? updatedSub : s));
+
+                // Show a quick success feedback (could be a toast, but using alert for consistency for now)
+                // alert("Grade updated successfully!"); 
+            } else {
+                const errData = await res.json();
+                alert("Error: " + (errData.detail || JSON.stringify(errData)));
+            }
+        } catch (err) {
+            alert("Network error: " + err.message);
         }
     };
 
@@ -93,46 +131,37 @@ const AssignmentSubmissions = () => {
                         <table className="w-full text-left border-collapse">
                             <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
-                                    <th className="p-4 font-semibold text-gray-600">Student ID</th>
+                                    <th className="p-4 font-semibold text-gray-600">Student</th>
                                     <th className="p-4 font-semibold text-gray-600">Submitted At</th>
-                                    <th className="p-4 font-semibold text-gray-600">AI Agent Score</th>
-                                    <th className="p-4 font-semibold text-gray-600">Teacher Score</th>
-                                    <th className="p-4 font-semibold text-gray-600">Model Score</th>
-                                    <th className="p-4 font-semibold text-gray-600">Feedback / Plagiarism</th>
+                                    <th className="p-4 font-semibold text-gray-600 text-center">OpenAI Score</th>
+                                    <th className="p-4 font-semibold text-gray-600 text-center">Semantic Index</th>
+                                    <th className="p-4 font-semibold text-gray-600">Feedback</th>
                                     <th className="p-4 font-semibold text-gray-600">File</th>
-                                    <th className="p-4 font-semibold text-gray-600">Actions</th>
+                                    <th className="p-4 font-semibold text-gray-600">Teacher Grade</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {submissions.map((sub) => (
                                     <tr key={sub.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="p-4">
-                                            <div className="flex items-center gap-2 font-medium text-gray-900">
-                                                <User className="w-4 h-4 text-indigo-400" />
-                                                {sub.student?.username || sub.student?.name || sub.student || "Unknown"}
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-gray-900">{sub.student?.name || sub.student?.username || "Unknown"}</span>
+                                                <span className="text-xs text-gray-400">@{sub.student?.username}</span>
                                             </div>
                                         </td>
-                                        <td className="p-4 text-gray-500">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-gray-400" />
-                                                {formatDate(sub.created_at || sub.submitted_at)}
-                                            </div>
+                                        <td className="p-4 text-xs text-gray-500">
+                                            {formatDate(sub.created_at || sub.submitted_at)}
                                         </td>
-                                        <td className="p-4">
-                                            <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-semibold border border-blue-100">
+                                        <td className="p-4 text-center">
+                                            <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-bold border border-blue-100 italic">
                                                 {sub.openai_score !== null ? sub.openai_score : "N/A"}
                                             </span>
                                         </td>
-                                        <td className="p-4">
-                                            <span className="inline-block px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs font-semibold border border-purple-100">
-                                                {sub.teacher_marks !== null ? sub.teacher_marks : "N/A"}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 font-bold text-gray-800">
+                                        <td className="p-4 text-center font-extrabold text-indigo-600 text-lg">
                                             {sub.marks !== null ? sub.marks : "-"}
                                         </td>
                                         <td className="p-4 max-w-xs">
-                                            <div className="text-sm text-gray-600 truncate" title={sub.feedback}>
+                                            <div className="text-xs text-gray-600 line-clamp-2" title={sub.feedback}>
                                                 {sub.feedback || "No feedback"}
                                             </div>
                                         </td>
@@ -142,25 +171,37 @@ const AssignmentSubmissions = () => {
                                                     href={sub.submitted_file}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium"
+                                                    className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 font-bold text-sm bg-indigo-50 px-3 py-1.5 rounded-lg transition-all"
                                                 >
                                                     <FileText className="w-4 h-4" /> View
                                                 </a>
                                             ) : (
-                                                <span className="text-gray-400 italic">No file</span>
+                                                <span className="text-gray-400 italic text-sm">No file</span>
                                             )}
                                         </td>
-                                        <td className="p-4">
-                                            {sub.submitted_file && (
-                                                <a
-                                                    href={sub.submitted_file}
-                                                    download
-                                                    className="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-indigo-50 inline-block transition-colors"
-                                                    title="Download"
+                                        <td className="p-4 min-w-[180px]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        value={gradingScores[sub.id] || ""}
+                                                        onChange={(e) => setGradingScores({ ...gradingScores, [sub.id]: e.target.value })}
+                                                        placeholder="Marks"
+                                                        className="w-20 px-3 py-1.5 border-2 border-gray-200 rounded-lg text-sm font-bold focus:border-indigo-500 outline-none transition-all"
+                                                    />
+                                                    {sub.teacher_marks !== null && (
+                                                        <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-sm">
+                                                            Set
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => handleGradeUpdate(sub.id)}
+                                                    className="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-700 hover:shadow-md active:scale-95 transition-all flex items-center gap-2"
                                                 >
-                                                    <Download className="w-5 h-5" />
-                                                </a>
-                                            )}
+                                                    Update
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

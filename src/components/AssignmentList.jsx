@@ -84,7 +84,7 @@ const AssignmentList = ({ assignments, onDelete, isTeacher }) => {
                         </div>
 
                         <div className="flex flex-col gap-2 items-end">
-                            {assignment.file && (
+                            {isTeacher && assignment.file && (
                                 <a
                                     href={assignment.file}
                                     target="_blank"
