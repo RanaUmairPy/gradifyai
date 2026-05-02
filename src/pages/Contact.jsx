@@ -86,8 +86,7 @@ const Contact = () => {
   // =========================================================================
   const socialLinks = [
     { name: "Facebook", icon: Facebook, url: "https://www.facebook.com/share/1BhXi1X35P/", color: "bg-blue-600 hover:bg-blue-700" },
-    { name: "WhatsApp 1", icon: MessageCircle, url: "https://wa.me/923488735199", label: "0348 8735199", color: "bg-green-500 hover:bg-green-600" }, 
-    { name: "WhatsApp 2", icon: MessageCircle, url: "https://wa.me/923124295838", label: "0312 4295838", color: "bg-green-500 hover:bg-green-600" }, 
+    { name: "WhatsApp 1", icon: MessageCircle, url: "https://wa.me/923211794510", label: "0321 1794510", color: "bg-green-500 hover:bg-green-600" },
     { name: "Instagram", icon: Instagram, url: "https://www.instagram.com/gradifyai_official", dummy: true, color: "bg-pink-600 hover:bg-pink-700" },
     { name: "LinkedIn", icon: Linkedin, url: "https://www.linkedin.com/company/gradifyai", dummy: true, color: "bg-blue-800 hover:bg-blue-900" },
     { name: "Twitter", icon: Twitter, url: "https://twitter.com/gradifyai", dummy: true, color: "bg-sky-500 hover:bg-sky-600" },
@@ -124,10 +123,10 @@ const Contact = () => {
               <Phone className="w-6 h-6 text-indigo-600 mt-1 flex-shrink-0" />
               <div>
                 <h3 className="text-xl font-bold text-gray-800">Call or Message</h3>
-                {/* Number 2 (0348...) is first */}
-                <a href="tel:+923488735199" className="block text-indigo-600 hover:text-indigo-800 transition">+(92) 348 8735199</a>
-                {/* Number 1 (0312...) is second */}
-                <a href="tel:+923124295838" className="block text-indigo-600 hover:text-indigo-800 transition">+(92) 312 4295838</a>
+                {/* Number 2 (0321...) is first */}
+                <a href="tel:+923211794510" className="block text-indigo-600 hover:text-indigo-800 transition">+(92) 321 1794510</a>
+                {/* Number 1 (0325...) is second */}
+                <a href="tel:+923258051831" className="block text-indigo-600 hover:text-indigo-800 transition">+(92) 325 8051831</a>
               </div>
             </div>
 
@@ -179,9 +178,6 @@ const Contact = () => {
                   );
                 })}
               </div>
-              <p className="text-xs text-gray-500 mt-4 text-center md:text-left">
-                *Instagram, LinkedIn, and Twitter links are currently dummy and will be updated soon.
-              </p>
             </div>
           </div>
 

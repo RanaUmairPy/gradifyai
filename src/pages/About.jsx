@@ -172,7 +172,7 @@ const About = () => {
         <div className="p-8 sm:p-10 bg-white border border-gray-200 rounded-3xl text-center shadow-lg mb-16">
             <Users className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto mb-3" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Meet the Founder: Umair Saeed
+                Meet the Founder: Jamshaid Ali
             </h2>
             <p className="text-sm sm:text-lg text-gray-700 max-w-4xl mx-auto mb-6">
                 GradifyAI is rooted in a deep understanding of academic needs. Our focus remains on <span className="font-extrabold">utility, reliability, and academic integrity</span>, ensuring the tool truly supports the learning ecosystem.
@@ -181,7 +181,7 @@ const About = () => {
             {/* Founder Link */}
             <div className="mt-4">
                 <a
-                href="https://www.linkedin.com/in/umair-saeed-5659a8340/"
+                href="https://www.linkedin.com/in/jamshaid-ali-7906192b7/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-indigo-600 font-bold text-base sm:text-xl hover:text-indigo-800 transition-all border-b-2 border-indigo-600 hover:border-indigo-800"
