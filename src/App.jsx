@@ -8,6 +8,7 @@ import Base from "./pages/Base";
 import Login from "./Auth/Login";
 import Signup from "./Auth/Signup"; // 👈 Add this import
 import EmailConfirmation from "./Auth/EmailConfirmation"; // 👈 Add this import
+import ForgotPassword from "./Auth/ForgotPassword";
 
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/email-confirmation" element={<EmailConfirmation />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* All other routes are handled by the Base component.
           The "/*" wildcard path tells React Router to render the Base component

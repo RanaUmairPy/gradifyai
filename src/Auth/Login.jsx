@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 // Icons used in the Login form
-import { ArrowRight, User, Lock, CornerRightUp, Brain, CheckCircle } from "lucide-react"; 
-import { useNavigate } from "react-router-dom";
+import { ArrowRight, User, Lock, CornerRightUp, Brain, CheckCircle, KeyRound } from "lucide-react"; 
+import { Link, useNavigate } from "react-router-dom";
 import BASE_API from "../BaseApi"; 
 
 // Component to represent the GradifyAI brain-like logo (High-Impact SVG)
@@ -147,10 +147,10 @@ const Login = () => {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* Username Input (Sophisticated Underline style) */}
+                {/* Username / Email Input (Sophisticated Underline style) */}
                 <div className="group">
                     <label className="block text-gray-700 font-semibold mb-2 text-sm group-focus-within:text-indigo-600 transition-colors">
-                        Institutional Username
+                        Username or Email
                     </label>
                     <div className="flex items-center border-b-2 border-indigo-300/70 rounded-none px-0 py-2 bg-transparent focus-within:border-indigo-600 transition-all duration-300">
                         <User className="text-gray-500 group-focus-within:text-indigo-600 w-5 h-5 mr-3 transition-colors" />
@@ -160,17 +160,26 @@ const Login = () => {
                             value={formData.username}
                             onChange={handleChange}
                             required
+                            autoComplete="username"
                             className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-500 font-medium"
-                            placeholder="Your registered username"
+                            placeholder="Your username or registered email"
                         />
                     </div>
                 </div>
 
                 {/* Password Input (Sophisticated Underline style) */}
                 <div className="group">
-                    <label className="block text-gray-700 font-semibold mb-2 text-sm group-focus-within:text-indigo-600 transition-colors">
-                        Password
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-gray-700 font-semibold text-sm group-focus-within:text-indigo-600 transition-colors">
+                            Password
+                        </label>
+                        <Link
+                            to="/forgot-password"
+                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
+                        >
+                            <KeyRound className="w-3 h-3" /> Forgot password?
+                        </Link>
+                    </div>
                     <div className="flex items-center border-b-2 border-indigo-300/70 rounded-none px-0 py-2 bg-transparent focus-within:border-indigo-600 transition-all duration-300">
                         <Lock className="text-gray-500 group-focus-within:text-indigo-600 w-5 h-5 mr-3 transition-colors" />
                         <input
@@ -179,6 +188,7 @@ const Login = () => {
                             value={formData.password}
                             onChange={handleChange}
                             required
+                            autoComplete="current-password"
                             className="w-full bg-transparent outline-none text-gray-800 placeholder:text-gray-500 font-medium"
                             placeholder="Secure password"
                         />
