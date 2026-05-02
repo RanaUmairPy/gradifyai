@@ -178,9 +178,6 @@ const Contact = () => {
                   );
                 })}
               </div>
-              <p className="text-xs text-gray-500 mt-4 text-center md:text-left">
-                *Instagram, LinkedIn, and Twitter links are currently dummy and will be updated soon.
-              </p>
             </div>
           </div>
 
