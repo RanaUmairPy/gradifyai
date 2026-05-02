@@ -8,13 +8,13 @@ import {
     Download,
     Users,
     UserMinus,
-    BookOpen,
     BarChart3,
     Calendar,
     Mail,
     Hash,
     RefreshCcw,
     AlertTriangle,
+    ArrowLeft,
 } from "lucide-react";
 import BASE_API from "../BaseApi";
 import AssignmentForm from "../components/AssignmentForm";
@@ -268,6 +268,18 @@ const ClassRoom = ({ classId }) => {
 
     return (
         <div className="min-h-screen bg-gray-50 p-6 md:p-12 space-y-8">
+            {/* Back navigation */}
+            <button
+                type="button"
+                onClick={() =>
+                    navigate(user?.is_teacher ? "/teacher" : "/student")
+                }
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-indigo-700 font-medium text-sm transition-colors group"
+            >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                Back to Dashboard
+            </button>
+
             {/* Header */}
             <header className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
@@ -335,41 +347,45 @@ const ClassRoom = ({ classId }) => {
                 )}
             </header>
 
-            {/* Tabs */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 inline-flex gap-1">
-                <button
-                    onClick={() => setActiveTab("assignments")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
-                        activeTab === "assignments"
-                            ? "bg-indigo-600 text-white shadow"
-                            : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                >
-                    <BookOpen className="w-4 h-4" /> Assignments
-                </button>
-                {user?.is_teacher && (
+            {/* Tabs (centered on every screen) */}
+            <div className="flex justify-center">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 inline-flex gap-1">
                     <button
-                        onClick={() => setActiveTab("students")}
+                        onClick={() => setActiveTab("assignments")}
                         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
-                            activeTab === "students"
+                            activeTab === "assignments"
                                 ? "bg-indigo-600 text-white shadow"
                                 : "text-gray-600 hover:bg-gray-50"
                         }`}
                     >
-                        <Users className="w-4 h-4" /> Students
-                        {studentsData?.total_students !== undefined && (
-                            <span
-                                className={`ml-1 text-xs px-2 py-0.5 rounded-full font-bold ${
-                                    activeTab === "students"
-                                        ? "bg-white text-indigo-600"
-                                        : "bg-indigo-100 text-indigo-700"
-                                }`}
-                            >
-                                {studentsData.total_students}
-                            </span>
-                        )}
+                        <span className="text-base leading-none" aria-hidden="true">📔</span>
+                        Assignments
                     </button>
-                )}
+                    {user?.is_teacher && (
+                        <button
+                            onClick={() => setActiveTab("students")}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                                activeTab === "students"
+                                    ? "bg-indigo-600 text-white shadow"
+                                    : "text-gray-600 hover:bg-gray-50"
+                            }`}
+                        >
+                            <span className="text-base leading-none" aria-hidden="true">🎓</span>
+                            Students
+                            {studentsData?.total_students !== undefined && (
+                                <span
+                                    className={`ml-1 text-xs px-2 py-0.5 rounded-full font-bold ${
+                                        activeTab === "students"
+                                            ? "bg-white text-indigo-600"
+                                            : "bg-indigo-100 text-indigo-700"
+                                    }`}
+                                >
+                                    {studentsData.total_students}
+                                </span>
+                            )}
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* === Assignments Tab === */}
@@ -379,7 +395,20 @@ const ClassRoom = ({ classId }) => {
                         <AssignmentForm onSubmit={handleCreateAssignment} creating={creating} />
                     )}
 
-                    <section>
+                    {/* Wrapped in the same attractive gradient panel as the dashboard class lists */}
+                    <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-3xl border border-indigo-100/80 shadow-sm p-5 sm:p-8">
+                        <div className="flex items-center justify-between mb-5 sm:mb-6">
+                            <h2 className="text-lg sm:text-2xl font-bold text-gray-800 flex items-center gap-3">
+                                <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-base sm:text-lg" aria-hidden="true">
+                                    📔
+                                </span>
+                                Assignments
+                                <span className="bg-indigo-600 text-white text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full">
+                                    {assignments.length}
+                                </span>
+                            </h2>
+                        </div>
+
                         {loading ? (
                             <div className="text-center py-20">
                                 <div className="animate-spin text-indigo-600 mb-4 inline-block w-8 h-8 border-4 border-current border-t-transparent rounded-full"></div>

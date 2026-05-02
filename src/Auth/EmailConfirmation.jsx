@@ -4,6 +4,7 @@ import axios from "axios";
 import { MailCheck, Key, RefreshCw, ShieldCheck } from "lucide-react"; 
 import { useNavigate } from "react-router-dom";
 import BASE_API from "../BaseApi";
+import AuthLayout from "../components/AuthLayout";
 
 const EmailConfirmation = () => {
   const navigate = useNavigate();
@@ -91,9 +92,7 @@ const EmailConfirmation = () => {
   };
 
   return (
-    // Consistent Background: Matches Login/Signup
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 sm:p-8">
-      
+    <AuthLayout bgClass="bg-gray-50">
       {/* Consistent Card Styling: Professional shadow and border */}
       <div className="bg-white/95 backdrop-blur-sm shadow-2xl shadow-indigo-200 rounded-xl p-6 sm:p-8 w-full max-w-sm border border-indigo-200">
         
@@ -167,7 +166,7 @@ const EmailConfirmation = () => {
         </div>
         
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

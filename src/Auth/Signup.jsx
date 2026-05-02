@@ -3,6 +3,7 @@ import axios from "axios";
 import { UserPlus, User, Mail, Lock, CornerRightUp, Brain, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BASE_API from "../BaseApi";
+import AuthLayout from "../components/AuthLayout";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -67,9 +68,7 @@ const Signup = () => {
     };
 
     return (
-        // 💡 BACKGROUND MATCHES LOGIN: Soft gray/blue gradient
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 sm:p-8">
-
+        <AuthLayout bgClass="bg-gray-50">
             {/* Main Content Wrapper (Container for both columns - responsive split) */}
             <div className="max-w-6xl w-full flex flex-col md:flex-row shadow-2xl shadow-indigo-200 rounded-2xl overflow-hidden border border-indigo-200">
 
@@ -258,7 +257,7 @@ const Signup = () => {
                     </p>
                 </div>
             </div>
-        </div>
+        </AuthLayout>
     );
 };
 

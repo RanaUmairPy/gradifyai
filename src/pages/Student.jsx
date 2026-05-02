@@ -145,12 +145,17 @@ const StudentPage = () => {
 
         <hr className="border-gray-200" />
 
-        {/* ===================== CLASS LIST ===================== */}
-        <section>
+        {/* ===================== CLASS LIST (wrapped in attractive gradient panel) ===================== */}
+        <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-3xl border border-indigo-100/80 shadow-sm p-5 sm:p-8">
           <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-3">
-              <BookOpen className="w-6 h-6 text-indigo-600" /> My Classes (
-              <span className="text-indigo-600">{classes.length}</span>)
+              <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+              </span>
+              My Classes
+              <span className="bg-indigo-600 text-white text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full">
+                {classes.length}
+              </span>
             </h2>
 
             {/* Search + View Toggle */}

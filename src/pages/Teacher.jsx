@@ -271,22 +271,26 @@ const TeacherPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 sm:p-6 md:p-8 lg:p-12 space-y-8 sm:space-y-10 transition-all">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8 lg:p-12 space-y-8 sm:space-y-10 transition-all">
       {/* Header */}
       {/* Header Removed */}
       <h1 className="text-2xl font-bold bg-white p-4 rounded-xl shadow-sm border-l-4 border-indigo-600">
         Dashboard
       </h1>
 
-      {/* Class List */}
-      <section>
-        <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-5 flex items-center gap-3">
-          <BookOpen className="w-6 h-6 text-indigo-600" />
-          Your Created Classes
-          <span className="text-indigo-600 text-base">
-            ({classes.length})
-          </span>
-        </h2>
+      {/* Class List — wrapped in an attractive gradient panel */}
+      <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-3xl border border-indigo-100/80 shadow-sm p-5 sm:p-8">
+        <div className="flex items-center justify-between mb-5 sm:mb-6">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-800 flex items-center gap-3">
+            <span className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white shadow-sm flex items-center justify-center">
+              <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+            </span>
+            Your Created Classes
+            <span className="bg-indigo-600 text-white text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full">
+              {classes.length}
+            </span>
+          </h2>
+        </div>
 
         {/* Loading */}
         {loading && (

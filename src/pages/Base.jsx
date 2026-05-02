@@ -42,7 +42,7 @@ const Base = () => {
   };
 
   const theme = {
-    bg: "bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-200",
+    bg: "bg-gray-50",
     header: "bg-white/80 backdrop-blur-md border-b border-indigo-100 shadow-md",
   };
 
@@ -62,7 +62,7 @@ const Base = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
+      <main className="flex-grow w-full max-w-7xl mx-auto px-0 py-4 sm:px-6 sm:py-12">
         <Routes>
           {/* Public Routes */}
           <Route path="/about" element={<About />} />

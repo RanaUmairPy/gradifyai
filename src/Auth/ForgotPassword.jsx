@@ -12,6 +12,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import BASE_API from "../BaseApi";
+import AuthLayout from "../components/AuthLayout";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -127,7 +128,7 @@ const ForgotPassword = () => {
     : "bg-red-100 text-red-600";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-200 p-4 sm:p-8">
+    <AuthLayout bgClass="bg-gray-50">
       <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl shadow-indigo-300/40 border border-indigo-200 p-6 sm:p-8">
         <Link
           to="/login"
@@ -305,7 +306,7 @@ const ForgotPassword = () => {
           </form>
         )}
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

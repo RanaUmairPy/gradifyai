@@ -272,13 +272,17 @@ const AssignmentDetails = ({ assignmentId }) => {
                                                 <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
                                                     <span className="block text-xs text-gray-500 uppercase font-semibold">AI Agent Score</span>
                                                     <span className="text-lg font-bold text-blue-600">
-                                                        {mySubmission.openai_score !== null ? mySubmission.openai_score : "N/A"}
+                                                        {mySubmission.openai_score !== null && mySubmission.openai_score !== undefined
+                                                            ? `${mySubmission.openai_score} / ${assignment.max_marks}`
+                                                            : "N/A"}
                                                     </span>
                                                 </div>
                                                 <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
                                                     <span className="block text-xs text-gray-500 uppercase font-semibold">Teacher Marks</span>
                                                     <span className="text-lg font-bold text-purple-600">
-                                                        {mySubmission.teacher_marks !== null ? mySubmission.teacher_marks : "Pending"}
+                                                        {mySubmission.teacher_marks !== null && mySubmission.teacher_marks !== undefined
+                                                            ? `${mySubmission.teacher_marks} / ${assignment.max_marks}`
+                                                            : "Pending"}
                                                     </span>
                                                 </div>
                                             </div>

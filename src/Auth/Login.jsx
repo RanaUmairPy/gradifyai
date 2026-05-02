@@ -4,6 +4,7 @@ import axios from "axios";
 import { ArrowRight, User, Lock, CornerRightUp, Brain, CheckCircle, KeyRound } from "lucide-react"; 
 import { Link, useNavigate } from "react-router-dom";
 import BASE_API from "../BaseApi"; 
+import AuthLayout from "../components/AuthLayout";
 
 // Component to represent the GradifyAI brain-like logo (High-Impact SVG)
 const GradifyAILogo = ({ className }) => (
@@ -73,9 +74,7 @@ const Login = () => {
   };
 
   return (
-    // PRIMARY BACKGROUND: Light Blue Gradient (Consistent and Attractive)
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-100 to-blue-200 p-4 sm:p-8">
-      
+    <AuthLayout bgClass="bg-gray-50">
       {/* Main Content Wrapper (Premium Shadow and Structure) */}
       <div className="max-w-5xl w-full flex flex-col md:flex-row shadow-3xl shadow-indigo-400/50 rounded-2xl overflow-hidden border border-white/50">
         
@@ -217,7 +216,7 @@ const Login = () => {
             </p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 
