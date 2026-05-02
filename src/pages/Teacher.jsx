@@ -77,38 +77,39 @@ const TeacherPage = () => {
     fetchClasses(token, user.id);
   }, [navigate]);
 
-  // 🔹 Fetch classes
+  // 🔹 Fetch classes (server-side scoped to this teacher via my-classes/)
   const fetchClasses = async (token, userId) => {
     try {
-      const res = await fetch(`${BASE_API}api/classclassrooms/`, {
+      const res = await fetch(`${BASE_API}api/classclassrooms/my-classes/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
         const data = await res.json();
-        const currentUserId = Number(userId);
-        const teacherClasses = data.filter(
-          (cls) => cls.created_by && Number(cls.created_by.id) === currentUserId
-        );
+        // my-classes/ returns { created_classes: [...], joined_classes: [...] }
+        const teacherClasses = data.created_classes || [];
         setClasses(teacherClasses);
-        // Update Cache
-        localStorage.setItem(`teacher_classes_${userId}`, JSON.stringify(teacherClasses));
+        if (userId) {
+          localStorage.setItem(
+            `teacher_classes_${userId}`,
+            JSON.stringify(teacherClasses)
+          );
+        }
       } else {
-        const errorData = await res.json();
-        if (!localStorage.getItem(`teacher_classes_${userId}`)) {
+        const errorData = await res.json().catch(() => ({}));
+        if (!userId || !localStorage.getItem(`teacher_classes_${userId}`)) {
           setError(errorData.detail || "Failed to load classes from server.");
         }
       }
     } catch {
-      if (!localStorage.getItem(`teacher_classes_${userId}`)) {
+      if (!userId || !localStorage.getItem(`teacher_classes_${userId}`)) {
         setError("Network error occurred. Please check your connection.");
       }
     } finally {
       setLoading(false);
     }
   };
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-    crossorigin="anonymous"></script>
+
   // 🔹 Create Class
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -138,7 +139,7 @@ const TeacherPage = () => {
         setClassCode("");
         setShowForm(false);
         setError("");
-        fetchClasses(token);
+        fetchClasses(token, teacher?.id);
       } else {
         const data = await res.json();
         setError(

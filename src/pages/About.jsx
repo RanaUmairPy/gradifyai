@@ -31,8 +31,6 @@ const impactMetrics = [
     { value: "20+", label: "Features Implemented" },
     { value: "5/5", label: "Educator Satisfaction" },
 ];
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-     crossorigin="anonymous"></script>
 const About = () => {
   useEffect(() => {
     // ✅ Robust SEO Setup (Kept intact)

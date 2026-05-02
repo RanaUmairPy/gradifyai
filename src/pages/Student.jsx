@@ -108,7 +108,7 @@ const StudentPage = () => {
 
       if (res.ok) {
         alert("✅ Success! You have joined the class.");
-        fetchJoinedClasses(token);
+        fetchJoinedClasses(token, student?.id);
       } else {
         const data = await res.json();
         const errorMessage =
@@ -124,8 +124,7 @@ const StudentPage = () => {
       );
     }
   };
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-    crossorigin="anonymous"></script>
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("access");

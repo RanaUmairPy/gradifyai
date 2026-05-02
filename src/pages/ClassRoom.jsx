@@ -73,24 +73,15 @@ const ClassRoom = ({ classId }) => {
             const classData = await classRes.json();
             setClassInfo(classData);
 
-            // 2. Fetch Assignments
-            const assignRes = await fetch(`${BASE_API}api/classassignments/?classroom=${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            // 2. Fetch assignments (already filtered server-side via ?classroom=)
+            const assignRes = await fetch(
+                `${BASE_API}api/classassignments/?classroom=${id}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
             if (assignRes.ok) {
-                const allAssignments = await assignRes.json();
-
-                // 3. Client-side Filtering
-                const filtered = allAssignments.filter(a => {
-                    if (a.classroom_id && a.classroom_id == id) return true;
-                    if (typeof a.classroom === 'string' && classData.code) {
-                        return a.classroom.includes(classData.code);
-                    }
-                    return typeof a.classroom === 'string' && a.classroom === classData.name;
-                });
-
-                setAssignments(filtered);
+                const data = await assignRes.json();
+                setAssignments(Array.isArray(data) ? data : []);
             } else {
                 setError("Failed to fetch assignments.");
             }
@@ -307,10 +298,21 @@ const ClassRoom = ({ classId }) => {
                                         const url = window.URL.createObjectURL(blob);
                                         const a = document.createElement("a");
                                         a.href = url;
-                                        a.download = `classroom_results_${id}.csv`;
+                                        // Build a friendly filename like
+                                        // "Electronics_Lab_PHYS-6115_results.csv".
+                                        const safeName = (classInfo?.name || "classroom")
+                                            .trim()
+                                            .replace(/[\\/:*?"<>|]+/g, "")
+                                            .replace(/\s+/g, "_");
+                                        const safeCode = (classInfo?.code || id)
+                                            .toString()
+                                            .replace(/[\\/:*?"<>|]+/g, "")
+                                            .replace(/\s+/g, "_");
+                                        a.download = `${safeName}_${safeCode}_results.csv`;
                                         document.body.appendChild(a);
                                         a.click();
                                         a.remove();
+                                        window.URL.revokeObjectURL(url);
                                     } else {
                                         alert("Failed to download results. ensure there are submissions.");
                                     }

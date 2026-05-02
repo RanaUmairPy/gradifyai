@@ -53,8 +53,6 @@ const howItWorksSteps = [
   },
 ];
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3750513018123303"
-  crossorigin="anonymous"></script>
 const Home = () => {
   useEffect(() => {
     // --- SEO Logic (Kept intact and robust) ---
