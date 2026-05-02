@@ -87,7 +87,8 @@ const Contact = () => {
   const socialLinks = [
     { name: "Facebook", icon: Facebook, url: "https://www.facebook.com/share/1BhXi1X35P/", color: "bg-blue-600 hover:bg-blue-700" },
     { name: "WhatsApp 1", icon: MessageCircle, url: "https://wa.me/923488735199", label: "0348 8735199", color: "bg-green-500 hover:bg-green-600" }, 
-    { name: "WhatsApp 2", icon: MessageCircle, url: "https://wa.me/923124295838", label: "0312 4295838", color: "bg-green-500 hover:bg-green-600" }, 
+    { name: "WhatsApp 2", icon: MessageCircle, url: "https://wa.me/923124295838", label: "0312 4295838", color: "bg-green-500 hover:bg-green-600" },
+    { name: "WhatsApp 3", icon: MessageCircle, url: "https://wa.me/923211794510", label: "0321 1794510", color: "bg-green-500 hover:bg-green-600" },
     { name: "Instagram", icon: Instagram, url: "https://www.instagram.com/gradifyai_official", dummy: true, color: "bg-pink-600 hover:bg-pink-700" },
     { name: "LinkedIn", icon: Linkedin, url: "https://www.linkedin.com/company/gradifyai", dummy: true, color: "bg-blue-800 hover:bg-blue-900" },
     { name: "Twitter", icon: Twitter, url: "https://twitter.com/gradifyai", dummy: true, color: "bg-sky-500 hover:bg-sky-600" },
