@@ -17,7 +17,7 @@ import AuthLayout from "../components/AuthLayout";
 const ForgotPassword = () => {
   const navigate = useNavigate();
 
-  // step: 1 = enter email, 2 = enter OTP + new password
+  // step: 1 = enter email, 2 = enter OTP + new password reset
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
