@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Download, User, Calendar } from "lucide-react";
+import { ArrowLeft, FileText, Download, User, Calendar, Image, X, ChevronLeft, ChevronRight } from "lucide-react";
 import BASE_API from "../BaseApi";
 
 const AssignmentSubmissions = () => {
@@ -11,6 +11,11 @@ const AssignmentSubmissions = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [assignmentTitle, setAssignmentTitle] = useState("");
+    const [assignment, setAssignment] = useState(null);
+
+    // State for viewing handwritten submission images
+    const [activeImageSub, setActiveImageSub] = useState(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
         const token = localStorage.getItem("access");
@@ -33,6 +38,7 @@ const AssignmentSubmissions = () => {
             if (assignRes.ok) {
                 const assignData = await assignRes.json();
                 setAssignmentTitle(assignData.title);
+                setAssignment(assignData);
             }
 
             // Fetch Submissions
@@ -133,11 +139,17 @@ const AssignmentSubmissions = () => {
                                 <tr>
                                     <th className="p-4 font-semibold text-gray-600">Student</th>
                                     <th className="p-4 font-semibold text-gray-600">Submitted At</th>
-                                    <th className="p-4 font-semibold text-gray-600 text-center">OpenAI Score</th>
-                                    <th className="p-4 font-semibold text-gray-600 text-center">Semantic Index</th>
+                                    {(!assignment || assignment.show_openai_score) && (
+                                        <th className="p-4 font-semibold text-gray-600 text-center">OpenAI Score</th>
+                                    )}
+                                    {(!assignment || assignment.show_model_score) && (
+                                        <th className="p-4 font-semibold text-gray-600 text-center">Semantic Index</th>
+                                    )}
                                     <th className="p-4 font-semibold text-gray-600">Feedback</th>
                                     <th className="p-4 font-semibold text-gray-600">File</th>
-                                    <th className="p-4 font-semibold text-gray-600">Teacher Grade</th>
+                                    {(!assignment || assignment.show_teacher_marks) && (
+                                        <th className="p-4 font-semibold text-gray-600">Teacher Grade</th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -152,61 +164,165 @@ const AssignmentSubmissions = () => {
                                         <td className="p-4 text-xs text-gray-500">
                                             {formatDate(sub.created_at || sub.submitted_at)}
                                         </td>
-                                        <td className="p-4 text-center">
-                                            <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-bold border border-blue-100 italic">
-                                                {sub.openai_score !== null ? sub.openai_score : "N/A"}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-center font-extrabold text-indigo-600 text-lg">
-                                            {sub.marks !== null ? sub.marks : "-"}
-                                        </td>
+                                        {(!assignment || assignment.show_openai_score) && (
+                                            <td className="p-4 text-center">
+                                                <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm font-bold border border-blue-100 italic">
+                                                    {sub.openai_score !== null ? sub.openai_score : "N/A"}
+                                                </span>
+                                            </td>
+                                        )}
+                                        {(!assignment || assignment.show_model_score) && (
+                                            <td className="p-4 text-center font-extrabold text-indigo-600 text-lg">
+                                                {sub.marks !== null ? sub.marks : "-"}
+                                            </td>
+                                        )}
                                         <td className="p-4 max-w-xs">
                                             <div className="text-xs text-gray-600 line-clamp-2" title={sub.feedback}>
                                                 {sub.feedback || "No feedback"}
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            {sub.submitted_file ? (
-                                                <a
-                                                    href={sub.submitted_file}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 font-bold text-sm bg-indigo-50 px-3 py-1.5 rounded-lg transition-all"
-                                                >
-                                                    <FileText className="w-4 h-4" /> View
-                                                </a>
-                                            ) : (
-                                                <span className="text-gray-400 italic text-sm">No file</span>
-                                            )}
-                                        </td>
-                                        <td className="p-4 min-w-[180px]">
-                                            <div className="flex items-center gap-2">
-                                                <div className="relative">
-                                                    <input
-                                                        type="number"
-                                                        value={gradingScores[sub.id] || ""}
-                                                        onChange={(e) => setGradingScores({ ...gradingScores, [sub.id]: e.target.value })}
-                                                        placeholder="Marks"
-                                                        className="w-20 px-3 py-1.5 border-2 border-gray-200 rounded-lg text-sm font-bold focus:border-indigo-500 outline-none transition-all"
-                                                    />
-                                                    {sub.teacher_marks !== null && (
-                                                        <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-sm">
-                                                            Set
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <button
-                                                    onClick={() => handleGradeUpdate(sub.id)}
-                                                    className="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-700 hover:shadow-md active:scale-95 transition-all flex items-center gap-2"
-                                                >
-                                                    Update
-                                                </button>
+                                            <div className="flex flex-col gap-2 min-w-[125px]">
+                                                {sub.submitted_file ? (
+                                                    <a
+                                                        href={sub.submitted_file}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center justify-center gap-1.5 text-indigo-600 hover:text-indigo-800 font-bold text-xs bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-all border border-indigo-100"
+                                                    >
+                                                        <FileText className="w-3.5 h-3.5" /> Extracted Text
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-gray-400 italic text-xs">No file</span>
+                                                )}
+                                                
+                                                {sub.images && sub.images.length > 0 && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setActiveImageSub(sub);
+                                                            setCurrentImageIndex(0);
+                                                        }}
+                                                        className="flex items-center justify-center gap-1.5 text-emerald-600 hover:text-emerald-800 font-bold text-xs bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-all border border-emerald-100"
+                                                    >
+                                                        <Image className="w-3.5 h-3.5" /> View Handwriting
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
+                                        {(!assignment || assignment.show_teacher_marks) && (
+                                            <td className="p-4 min-w-[180px]">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="relative">
+                                                        <input
+                                                            type="number"
+                                                            value={gradingScores[sub.id] || ""}
+                                                            onChange={(e) => setGradingScores({ ...gradingScores, [sub.id]: e.target.value })}
+                                                            placeholder="Marks"
+                                                            className="w-20 px-3 py-1.5 border-2 border-gray-200 rounded-lg text-sm font-bold focus:border-indigo-500 outline-none transition-all"
+                                                        />
+                                                        {sub.teacher_marks !== null && (
+                                                            <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-sm">
+                                                                Set
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleGradeUpdate(sub.id)}
+                                                        className="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-700 hover:shadow-md active:scale-95 transition-all flex items-center gap-2"
+                                                    >
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Handwritten images viewer modal */}
+            {activeImageSub && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-305">
+                    <div className="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+                        {/* Header */}
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <div>
+                                <h3 className="font-bold text-gray-900 text-lg">
+                                    Handwritten Assignment
+                                </h3>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                    Student: <span className="font-semibold text-gray-700">{activeImageSub.student?.name || activeImageSub.student?.username}</span> • Page {currentImageIndex + 1} of {activeImageSub.images.length}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setActiveImageSub(null)}
+                                className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Image Canvas */}
+                        <div className="flex-1 bg-gray-950 flex items-center justify-center min-h-[350px] relative p-6 select-none">
+                            {activeImageSub.images.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={() => setCurrentImageIndex(prev => (prev > 0 ? prev - 1 : activeImageSub.images.length - 1))}
+                                        className="absolute left-4 p-2.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm active:scale-95 border border-white/10"
+                                    >
+                                        <ChevronLeft className="w-5 h-5" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => setCurrentImageIndex(prev => (prev < activeImageSub.images.length - 1 ? prev + 1 : 0))}
+                                        className="absolute right-4 p-2.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all backdrop-blur-sm active:scale-95 border border-white/10"
+                                    >
+                                        <ChevronRight className="w-5 h-5" />
+                                    </button>
+                                </>
+                            )}
+
+                            <img
+                                src={activeImageSub.images[currentImageIndex]?.image}
+                                alt={`Page ${currentImageIndex + 1}`}
+                                className="max-h-[60vh] max-w-full object-contain rounded-lg shadow-lg border border-white/10"
+                            />
+                        </div>
+
+                        {/* Footer & Navigation strip */}
+                        <div className="p-4 border-t border-gray-100 flex flex-col gap-3 bg-gray-50">
+                            {activeImageSub.images.length > 1 && (
+                                <div className="flex justify-center gap-2 overflow-x-auto py-1">
+                                    {activeImageSub.images.map((img, idx) => (
+                                        <button
+                                            key={img.id}
+                                            onClick={() => setCurrentImageIndex(idx)}
+                                            className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+                                                idx === currentImageIndex
+                                                    ? 'border-indigo-600 scale-105 shadow-sm'
+                                                    : 'border-transparent opacity-50 hover:opacity-100'
+                                            }`}
+                                        >
+                                            <img src={img.image} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                <span>Uploaded: {formatDate(activeImageSub.images[currentImageIndex]?.uploaded_at)}</span>
+                                <a
+                                    href={activeImageSub.images[currentImageIndex]?.image}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 transition-colors"
+                                >
+                                    Open high-res in new tab
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

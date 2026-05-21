@@ -9,6 +9,9 @@ const AssignmentForm = ({ onSubmit, creating }) => {
         min_words: "",
         dead_line: "",
         required_keywords: "",
+        show_openai_score: true,
+        show_model_score: true,
+        show_teacher_marks: true,
     });
     const [file, setFile] = useState(null);
 
@@ -23,6 +26,9 @@ const AssignmentForm = ({ onSubmit, creating }) => {
                 min_words: "",
                 dead_line: "",
                 required_keywords: "",
+                show_openai_score: true,
+                show_model_score: true,
+                show_teacher_marks: true,
             });
             setFile(null);
         });
@@ -107,6 +113,50 @@ const AssignmentForm = ({ onSubmit, creating }) => {
                         onChange={e => setFormData({ ...formData, required_keywords: e.target.value })}
                         placeholder="e.g. React, Components, Props"
                     />
+                </div>
+
+                <div className="space-y-4 border-t border-indigo-100 pt-6">
+                    <h3 className="text-base font-semibold text-gray-800">Grading Configuration Options</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <label className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-indigo-500 cursor-pointer transition-all bg-gray-50/50">
+                            <input
+                                type="checkbox"
+                                className="mt-1 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                checked={formData.show_openai_score}
+                                onChange={e => setFormData({ ...formData, show_openai_score: e.target.checked })}
+                            />
+                            <div>
+                                <span className="text-sm font-semibold text-gray-700 block">OpenAI Auto-Grading</span>
+                                <span className="text-xs text-gray-500">Grading and feedback powered by GPT model.</span>
+                            </div>
+                        </label>
+
+                        <label className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-indigo-500 cursor-pointer transition-all bg-gray-50/50">
+                            <input
+                                type="checkbox"
+                                className="mt-1 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                checked={formData.show_model_score}
+                                onChange={e => setFormData({ ...formData, show_model_score: e.target.checked })}
+                            />
+                            <div>
+                                <span className="text-sm font-semibold text-gray-700 block">Local Model Score</span>
+                                <span className="text-xs text-gray-500">Enable local semantic matching score.</span>
+                            </div>
+                        </label>
+
+                        <label className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-indigo-500 cursor-pointer transition-all bg-gray-50/50">
+                            <input
+                                type="checkbox"
+                                className="mt-1 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                checked={formData.show_teacher_marks}
+                                onChange={e => setFormData({ ...formData, show_teacher_marks: e.target.checked })}
+                            />
+                            <div>
+                                <span className="text-sm font-semibold text-gray-700 block">Teacher Grading</span>
+                                <span className="text-xs text-gray-500">Allow manual grading and feedback by teacher.</span>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
                 <div className="flex justify-end pt-4">

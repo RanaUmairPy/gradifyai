@@ -8,7 +8,12 @@ import {
     Briefcase,
     Upload,
     ArrowLeft,
-    AlertTriangle
+    AlertTriangle,
+    Image as ImageIcon,
+    Trash2,
+    Sparkles,
+    Plus,
+    Check
 } from "lucide-react";
 import BASE_API from "../BaseApi";
 
@@ -27,6 +32,12 @@ const AssignmentDetails = ({ assignmentId }) => {
     const [submitting, setSubmitting] = useState(false);
     const [submissionError, setSubmissionError] = useState("");
     const [submissionSuccess, setSubmissionSuccess] = useState(false);
+
+    // Handwritten Submission State
+    const [submissionMethod, setSubmissionMethod] = useState("file"); // "file" or "handwritten"
+    const [handwrittenImages, setHandwrittenImages] = useState([]);
+    const [extractedText, setExtractedText] = useState("");
+    const [ocrLoading, setOcrLoading] = useState(false);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -92,19 +103,92 @@ const AssignmentDetails = ({ assignmentId }) => {
         }
     };
 
-    const handleSubmission = async (e) => {
-        e.preventDefault();
-        if (!submissionFile) {
-            setSubmissionError("Please select a file to upload.");
+    const handleAddImage = (e) => {
+        const files = Array.from(e.target.files);
+        const newImages = files.map(file => ({
+            file,
+            preview: URL.createObjectURL(file)
+        }));
+        setHandwrittenImages(prev => [...prev, ...newImages]);
+    };
+
+    const handleRemoveImage = (indexToRemove) => {
+        setHandwrittenImages(prev => {
+            const updated = prev.filter((_, idx) => idx !== indexToRemove);
+            URL.revokeObjectURL(prev[indexToRemove].preview);
+            return updated;
+        });
+    };
+
+    const handleExtractText = async () => {
+        if (handwrittenImages.length === 0) {
+            alert("Please add at least one handwritten image first.");
             return;
         }
 
         const token = localStorage.getItem("access");
         const formData = new FormData();
-        // Based on backend error: {"assignment_id":["This field is required."],"submitted_file":["No file was submitted."]}
+        handwrittenImages.forEach((imgObj) => {
+            formData.append("images", imgObj.file);
+        });
+
+        try {
+            setOcrLoading(true);
+            setSubmissionError("");
+            const res = await fetch(`${BASE_API}api/classsubmissions/extract-handwriting/`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setExtractedText(data.text || "");
+                alert("Text extracted successfully! You can now review and make adjustments in the text box below.");
+            } else {
+                const errData = await res.json();
+                setSubmissionError(errData.error || "Failed to extract text from images.");
+            }
+        } catch (err) {
+            setSubmissionError("OCR Error: " + err.message);
+        } finally {
+            setOcrLoading(false);
+        }
+    };
+
+    const handleSubmission = async (e) => {
+        e.preventDefault();
+        
+        if (submissionMethod === "file" && !submissionFile) {
+            setSubmissionError("Please select a file to upload.");
+            return;
+        }
+        if (submissionMethod === "handwritten") {
+            if (handwrittenImages.length === 0) {
+                setSubmissionError("Please upload at least one handwritten image.");
+                return;
+            }
+            if (!extractedText.trim()) {
+                setSubmissionError("Please extract and verify the text before submitting.");
+                return;
+            }
+        }
+
+        const token = localStorage.getItem("access");
+        const formData = new FormData();
         formData.append("assignment_id", id);
-        formData.append("submitted_file", submissionFile);
-        // Add student ID if backend requires it explicitly, usually derived from token
+        
+        if (submissionMethod === "file") {
+            formData.append("submitted_file", submissionFile);
+        } else {
+            formData.append("extracted_text", extractedText);
+            handwrittenImages.forEach((imgObj) => {
+                formData.append("images", imgObj.file);
+            });
+        }
+
         if (user && user.id) {
             formData.append("student", user.id);
         }
@@ -123,8 +207,9 @@ const AssignmentDetails = ({ assignmentId }) => {
             if (res.ok) {
                 setSubmissionSuccess(true);
                 setSubmissionFile(null);
+                setHandwrittenImages([]);
+                setExtractedText("");
                 alert("Assignment submitted successfully!");
-                // Auto-refresh to show marks and submission info
                 fetchAssignmentDetails(token);
             } else {
                 const errData = await res.json();
@@ -180,7 +265,7 @@ const AssignmentDetails = ({ assignmentId }) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Assignment Details */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-1 space-y-6">
                     <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
                         <div className="flex justify-between items-start">
                             <h1 className="text-3xl font-extrabold text-gray-900 mb-4">{assignment.title}</h1>
@@ -229,7 +314,7 @@ const AssignmentDetails = ({ assignmentId }) => {
                 </div>
 
                 {/* Submission Sidebar */}
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-2">
                     {isTeacher ? (
                         <div className="bg-white rounded-2xl shadow-sm border border-indigo-100 p-8 text-center">
                             <Briefcase className="w-12 h-12 text-indigo-200 mx-auto mb-4" />
@@ -268,31 +353,60 @@ const AssignmentDetails = ({ assignmentId }) => {
                                                 <a href={mySubmission.submitted_file} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline truncate max-w-[150px] font-medium">View File</a>
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-3 mt-4 border-t border-gray-200 pt-3">
-                                                <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
-                                                    <span className="block text-xs text-gray-500 uppercase font-semibold">AI Agent Score</span>
-                                                    <span className="text-lg font-bold text-blue-600">
-                                                        {mySubmission.openai_score !== null && mySubmission.openai_score !== undefined
-                                                            ? `${mySubmission.openai_score} / ${assignment.max_marks}`
-                                                            : "N/A"}
-                                                    </span>
+                                            {mySubmission.images && mySubmission.images.length > 0 && (
+                                                <div className="mt-4 pt-3 border-t border-gray-200">
+                                                    <span className="block text-xs font-semibold text-gray-500 mb-2">Submitted Handwritten Pages:</span>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {mySubmission.images.map((imgObj, idx) => (
+                                                            <a
+                                                                key={imgObj.id || idx}
+                                                                href={imgObj.image}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="relative group block w-14 h-14 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 hover:scale-105 transition-all shadow-sm"
+                                                            >
+                                                                <img src={imgObj.image} alt={`Page ${idx + 1}`} className="w-full h-full object-cover" />
+                                                                <span className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white font-bold transition-all">Page {idx + 1}</span>
+                                                            </a>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                                <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
-                                                    <span className="block text-xs text-gray-500 uppercase font-semibold">Teacher Marks</span>
-                                                    <span className="text-lg font-bold text-purple-600">
-                                                        {mySubmission.teacher_marks !== null && mySubmission.teacher_marks !== undefined
-                                                            ? `${mySubmission.teacher_marks} / ${assignment.max_marks}`
-                                                            : "Pending"}
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            )}
 
-                                            <div className="border-t border-gray-200 my-2 pt-3 flex justify-between items-center">
-                                                <span className="text-gray-700 font-bold">Model Score:</span>
-                                                <span className={`font-bold text-lg ${mySubmission.marks ? "text-indigo-600" : "text-gray-400"}`}>
-                                                    {mySubmission.marks !== undefined && mySubmission.marks !== null ? `${mySubmission.marks} / ${assignment.max_marks}` : "Pending"}
-                                                </span>
-                                            </div>
+                                            {/* Grid for AI Score & Teacher Marks */}
+                                            {(assignment.show_openai_score || assignment.show_teacher_marks) && (
+                                                <div className={`grid ${assignment.show_openai_score && assignment.show_teacher_marks ? "grid-cols-2" : "grid-cols-1"} gap-3 mt-4 border-t border-gray-200 pt-3`}>
+                                                    {assignment.show_openai_score && (
+                                                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
+                                                            <span className="block text-xs text-gray-500 uppercase font-semibold">AI Agent Score</span>
+                                                            <span className="text-lg font-bold text-blue-600">
+                                                                {mySubmission.openai_score !== null && mySubmission.openai_score !== undefined
+                                                                    ? `${mySubmission.openai_score} / ${assignment.max_marks}`
+                                                                    : "N/A"}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {assignment.show_teacher_marks && (
+                                                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm text-center">
+                                                            <span className="block text-xs text-gray-500 uppercase font-semibold">Teacher Marks</span>
+                                                            <span className="text-lg font-bold text-purple-600">
+                                                                {mySubmission.teacher_marks !== null && mySubmission.teacher_marks !== undefined
+                                                                    ? `${mySubmission.teacher_marks} / ${assignment.max_marks}`
+                                                                    : "Pending"}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {assignment.show_model_score && (
+                                                <div className="border-t border-gray-200 my-2 pt-3 flex justify-between items-center">
+                                                    <span className="text-gray-700 font-bold">Model Score:</span>
+                                                    <span className={`font-bold text-lg ${mySubmission.marks ? "text-indigo-600" : "text-gray-400"}`}>
+                                                        {mySubmission.marks !== undefined && mySubmission.marks !== null ? `${mySubmission.marks} / ${assignment.max_marks}` : "Pending"}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {mySubmission.feedback && (
                                                 <div className="mt-2 text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
                                                     <strong className="block text-gray-700 mb-1">Feedback / Plagiarism Report:</strong>
@@ -311,26 +425,132 @@ const AssignmentDetails = ({ assignmentId }) => {
                                         </div>
                                     )}
 
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Upload File</label>
-                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
-                                            <input
-                                                type="file"
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                onChange={(e) => setSubmissionFile(e.target.files[0])}
-                                            />
-                                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                            <p className="text-sm text-gray-500">
-                                                {submissionFile ? (
-                                                    <span className="text-indigo-600 font-semibold">{submissionFile.name}</span>
-                                                ) : "Click to browse or drag file here"}
+                                    {/* Tabs */}
+                                    <div className="flex border-b border-gray-200 mb-4 bg-gray-50 p-1 rounded-xl">
+                                        <button
+                                            type="button"
+                                            className={`flex-1 py-2 text-xs font-bold rounded-lg text-center transition-all ${
+                                                submissionMethod === "file"
+                                                    ? "bg-white text-indigo-600 shadow-sm border border-gray-100"
+                                                    : "text-gray-400 hover:text-gray-600"
+                                            }`}
+                                            onClick={() => setSubmissionMethod("file")}
+                                        >
+                                            Standard File
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`flex-1 py-2 text-xs font-bold rounded-lg text-center transition-all flex items-center justify-center gap-1.5 ${
+                                                submissionMethod === "handwritten"
+                                                    ? "bg-white text-indigo-600 shadow-sm border border-gray-100"
+                                                    : "text-gray-400 hover:text-gray-600"
+                                            }`}
+                                            onClick={() => setSubmissionMethod("handwritten")}
+                                        >
+                                            <ImageIcon className="w-3.5 h-3.5" /> Handwritten
+                                        </button>
+                                    </div>
+
+                                    {submissionMethod === "file" ? (
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Upload Document</label>
+                                            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                                                <input
+                                                    type="file"
+                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                    onChange={(e) => setSubmissionFile(e.target.files[0])}
+                                                />
+                                                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                                <p className="text-sm text-gray-500">
+                                                    {submissionFile ? (
+                                                        <span className="text-indigo-600 font-semibold">{submissionFile.name}</span>
+                                                    ) : "Click to browse or drag file here"}
+                                                </p>
+                                            </div>
+                                            <p className="text-xs text-center text-gray-400 mt-3">
+                                                Allowed formats: PDF, DOCX, ZIP. Max size: 10MB.
                                             </p>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-semibold text-gray-700 mb-2">Add Handwritten Pages</label>
+                                                <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                                                    <input
+                                                        type="file"
+                                                        multiple
+                                                        accept="image/*"
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                        onChange={handleAddImage}
+                                                    />
+                                                    <Plus className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                                                    <p className="text-xs text-gray-500 font-semibold">Add Handwriting Images</p>
+                                                </div>
+                                            </div>
+
+                                            {handwrittenImages.length > 0 && (
+                                                <div className="grid grid-cols-3 gap-2 border border-gray-100 bg-gray-50 p-2.5 rounded-xl max-h-40 overflow-y-auto">
+                                                    {handwrittenImages.map((imgObj, idx) => (
+                                                        <div key={idx} className="relative group w-full aspect-square bg-gray-200 rounded-lg overflow-hidden border border-gray-300">
+                                                            <img src={imgObj.preview} alt={`Upload preview ${idx}`} className="w-full h-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleRemoveImage(idx)}
+                                                                className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <span className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-white font-bold">Page {idx + 1}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <button
+                                                type="button"
+                                                onClick={handleExtractText}
+                                                disabled={ocrLoading || handwrittenImages.length === 0}
+                                                className={`w-full py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 border shadow-sm transition-all ${
+                                                    handwrittenImages.length === 0
+                                                        ? "bg-gray-50 text-gray-300 border-gray-200 cursor-not-allowed"
+                                                        : ocrLoading
+                                                        ? "bg-indigo-50 text-indigo-500 border-indigo-200"
+                                                        : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200 hover:shadow-md"
+                                                }`}
+                                            >
+                                                {ocrLoading ? (
+                                                    <>
+                                                        <div className="w-4 h-4 animate-spin border-2 border-indigo-500 border-t-transparent rounded-full"></div>
+                                                        Extracting handwriting text...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Sparkles className="w-4 h-4" /> Extract text using AI OCR
+                                                    </>
+                                                )}
+                                            </button>
+
+                                            {extractedText && (
+                                                <div className="space-y-2">
+                                                    <label className="block text-xs font-semibold text-gray-600">Extracted Text (Review & Edit):</label>
+                                                    <textarea
+                                                        value={extractedText}
+                                                        onChange={(e) => setExtractedText(e.target.value)}
+                                                        rows={6}
+                                                        className="w-full p-3 border-2 border-indigo-100 rounded-xl text-xs text-gray-700 focus:border-indigo-500 outline-none resize-y shadow-inner font-mono whitespace-pre-wrap"
+                                                        placeholder="Review or edit extracted text here to ensure perfect grading correctness..."
+                                                    />
+                                                </div>
+                                            )}
+                                            <p className="text-[10px] text-center text-gray-400">
+                                                Accepted formats: PNG, JPG, JPEG. Make sure text is clearly lit.
+                                            </p>
+                                        </div>
+                                    )}
 
                                     <button
                                         type="submit"
-                                        disabled={submitting || isPastDeadline}
+                                        disabled={submitting || isPastDeadline || ocrLoading}
                                         className={`w-full py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2 ${isPastDeadline
                                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                             : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg"
@@ -338,10 +558,6 @@ const AssignmentDetails = ({ assignmentId }) => {
                                     >
                                         {submitting ? "Uploading..." : isPastDeadline ? "Deadline Passed" : "Submit Assignment"}
                                     </button>
-
-                                    <p className="text-xs text-center text-gray-400">
-                                        Allowed formats: PDF, DOCX, ZIP. Max size: 10MB.
-                                    </p>
                                 </form>
                             )}
                         </div>

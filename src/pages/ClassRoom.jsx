@@ -193,6 +193,9 @@ const ClassRoom = ({ classId }) => {
         data.append("description", formData.description);
         data.append("max_marks", formData.max_marks);
         data.append("min_words", formData.min_words);
+        data.append("show_openai_score", formData.show_openai_score);
+        data.append("show_model_score", formData.show_model_score);
+        data.append("show_teacher_marks", formData.show_teacher_marks);
 
         const keywords = formData.required_keywords.split(",").map(k => k.trim()).filter(k => k);
         keywords.forEach(k => data.append("required_keywords", k));
