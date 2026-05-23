@@ -1,216 +1,319 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-// Lucide icons
-import { Brain, Users, Target, Rocket, Clock, Zap, BarChart3, HeartHandshake } from "lucide-react";
+import {
+  Brain, Users, Target, Rocket, GraduationCap, Code2, Server,
+  Lightbulb, Eye, ScanText, Copy, ToggleRight, CheckCircle,
+  HeartHandshake, ArrowRight, Sparkles, BookOpen, Layers
+} from "lucide-react";
 
-// --- Core Pillars Data ---
-const corePillars = [
+// ═══════════════════════════════════════
+//  PROJECT GOALS
+// ═══════════════════════════════════════
+const projectGoals = [
   {
-    icon: Clock,
-    title: "Save Time",
-    description: "Automate grading and feedback to reduce educators' manual workload by up to 90%.",
-    color: "text-red-600",
+    icon: Brain,
+    title: "Automate Grading with AI",
+    description: "Reduce the manual effort of checking each assignment by letting AI handle the scoring based on teacher-defined rubrics.",
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+    border: "border-violet-100",
   },
   {
-    icon: Zap,
-    title: "Instant Feedback",
-    description: "Provide students with immediate, targeted insights for continuous learning and rapid improvement.",
-    color: "text-yellow-600",
+    icon: ScanText,
+    title: "Support Handwritten Submissions",
+    description: "Enable students to scan handwritten assignments by uploading photos, with OCR extracting text for AI-powered evaluation.",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+    border: "border-amber-100",
   },
   {
-    icon: BarChart3,
-    title: "Unbiased Grading",
-    description: "Utilize consistent AI rubrics to ensure fair, transparent, and objective evaluations every time.",
-    color: "text-teal-600",
+    icon: ToggleRight,
+    title: "Give Teachers Full Control",
+    description: "Let teachers choose their preferred checking method — AI auto-check, manual review, or a hybrid approach.",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+    border: "border-emerald-100",
+  },
+  {
+    icon: Copy,
+    title: "Prevent Academic Dishonesty",
+    description: "Automatically detect and reject duplicate submissions to maintain fairness and originality in assessments.",
+    color: "text-rose-600",
+    bg: "bg-rose-50",
+    border: "border-rose-100",
   },
 ];
 
-// --- Impact Metrics ---
-const impactMetrics = [
-    { value: "90%", label: "Time Saved on Grading" },
-    { value: "20+", label: "Features Implemented" },
-    { value: "5/5", label: "Educator Satisfaction" },
+// ═══════════════════════════════════════
+//  TECH STACK
+// ═══════════════════════════════════════
+const techStack = [
+  { category: "Frontend", items: ["React.js (Vite)", "Tailwind CSS", "Lucide Icons", "React Router"], color: "from-violet-600 to-indigo-600", icon: Code2 },
+  { category: "Backend", items: ["Django REST Framework", "Python", "PostgreSQL", "JWT Authentication"], color: "from-emerald-600 to-teal-600", icon: Server },
+  { category: "AI & Tools", items: ["AI Grading Engine", "OCR Processing", "Content Analysis", "Keyword Matching"], color: "from-amber-500 to-orange-600", icon: Brain },
 ];
+
+// ═══════════════════════════════════════
+//  TEAM MEMBERS
+// ═══════════════════════════════════════
+const teamMembers = [
+  {
+    name: "Umair Saeed Khan",
+    role: "Backend Developer",
+    description: "Designed and built the entire backend architecture — Django REST APIs, AI grading engine, OCR integration, database models, JWT authentication, and the assignment evaluation pipeline.",
+    icon: Server,
+    color: "from-emerald-600 to-teal-600",
+    bgGlow: "bg-emerald-500/10",
+    linkedin: "https://www.linkedin.com/in/umair-saeed-5659a8340/",
+    contributions: ["Django REST APIs", "AI Grading Logic", "OCR Integration", "Database Design", "Authentication System"],
+  },
+  {
+    name: "Muzammal Ikhlaq",
+    role: "Frontend Developer & Mobile App Developer",
+    description: "Built the complete user interface — responsive React components, premium UI/UX design, teacher & student dashboards, real-time state management, and seamless API integration.",
+    icon: Code2,
+    color: "from-violet-600 to-indigo-600",
+    bgGlow: "bg-violet-500/10",
+    linkedin: "https://www.linkedin.com/in/muzammal-ikhlaq",
+    contributions: ["React UI Components", "Responsive Design", "Dashboard Interfaces", "API Integration", "Mobile App Developer"],
+  },
+];
+
+// ═══════════════════════════════════════
+//  WHAT WE BUILT — Platform capabilities
+// ═══════════════════════════════════════
+const platformCapabilities = [
+  "AI-powered assignment scoring using keywords, word count, and content analysis",
+  "OCR engine for grading handwritten scanned assignments",
+  "Three checking modules: AI Auto-Check, Manual Review, Hybrid Mode",
+  "Automatic duplicate submission detection and rejection",
+  "Teacher score override — final grade control stays with the teacher",
+  "AI-generated detailed feedback for every submission",
+  "Class management with unique join codes for students",
+  "Custom assignment configuration: max marks, keywords, word limits, deadlines",
+  "Per-student analytics: submitted, graded, and average scores",
+  "Secure JWT authentication with email OTP verification",
+];
+
 const About = () => {
   useEffect(() => {
-    // ✅ Robust SEO Setup (Kept intact)
-    document.title = "About GradifyAI | The Future of AI-Powered Education";
-
-    const description =
-      "Learn about GradifyAI — the AI-powered academic assistant dedicated to simplifying assignment checking, grading, and classroom management for modern education.";
-
-    const keywords =
-      "GradifyAI, AI Assignment Checker, AI Grading, Educational Technology, Online Learning, Teacher Dashboard, Student Portal, Assignment Evaluation, EdTech, Umair Saeed";
-
-    // Helper function to manage meta tags
+    document.title = "About GradifyAI | AI-Powered Assignment Checking Platform";
+    const description = "GradifyAI is a Final Year Project that automates assignment grading using AI, supports handwritten OCR, offers flexible checking modules, and provides complete classroom management.";
+    const keywords = "GradifyAI, about, FYP, final year project, AI grading, assignment checker, Umair Saeed Khan, Muzammal Ikhlaq, education technology, OCR";
     const updateMetaTag = (selector, attribute, content) => {
-        let tag = document.querySelector(selector);
-        if (tag) {
-            tag.setAttribute(attribute, content);
-        } else {
-            tag = document.createElement("meta");
-            tag.setAttribute(attribute, selector.includes('name') ? 'name' : 'property');
-            tag.content = content;
-            document.head.appendChild(tag);
-        }
+      let tag = document.querySelector(selector);
+      if (tag) { tag.setAttribute(attribute, content); }
+      else { tag = document.createElement("meta"); tag.setAttribute(attribute, selector.includes('name') ? 'name' : 'property'); tag.content = content; document.head.appendChild(tag); }
     };
-
     updateMetaTag('meta[name="description"]', 'content', description);
     updateMetaTag('meta[name="keywords"]', 'content', keywords);
-
-    // Open Graph Tags
-    const ogData = [
-      { property: "og:title", content: "About GradifyAI | Empowering Teachers & Students with AI" },
-      { property: "og:description", content: "Discover how GradifyAI uses AI to make assignment checking, grading, and classroom management smarter and easier." },
-      { property: "og:image", content: "https://www.gradifyai.online/gradify-cover.png" },
+    [
+      { property: "og:title", content: "About GradifyAI | AI Assignment Checking Platform" },
+      { property: "og:description", content: description },
       { property: "og:url", content: "https://www.gradifyai.online/about" },
-      { property: "twitter:card", content: "summary_large_image" },
-    ];
-    
-    ogData.forEach(({ property, content }) => {
-        updateMetaTag(`meta[property="${property}"]`, 'content', content);
-    });
-
+    ].forEach(({ property, content }) => updateMetaTag(`meta[property="${property}"]`, 'content', content));
   }, []);
 
   return (
-    // Base container: Premium look with mobile-friendly vertical padding
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 py-10 sm:py-16 px-4 font-sans">
+    <div className="min-h-screen py-4 sm:py-8">
       <div className="max-w-6xl mx-auto">
-        
-        {/* ======================================================= */}
-        {/* HERO SECTION: The Core Story */}
-        {/* ======================================================= */}
-        <div className="text-center mb-12 sm:mb-16 p-6 sm:p-8 bg-white rounded-3xl shadow-2xl border-b-4 border-purple-500/80">
-            <p className="text-xs sm:text-sm font-semibold text-purple-600 uppercase tracking-widest mb-2">
-                Our Foundation
-            </p>
-            <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 mb-3 leading-snug">
-                The Story Behind <span className="font-extrabold">GradifyAI</span>
+
+        {/* ═══════════════ HERO ═══════════════ */}
+        <section className="relative text-center mb-10 sm:mb-14 p-6 sm:p-10 lg:p-14 bg-white rounded-2xl sm:rounded-3xl shadow-card border border-slate-100 overflow-hidden animate-fade-in-up">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600" />
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-100/30 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-100/20 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-50 border border-violet-100 text-violet-700 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-5">
+              <GraduationCap className="w-3.5 h-3.5" /> Final Year Project
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
+              The Story Behind <span className="gradient-text">GradifyAI</span>
             </h1>
-            <p className="text-base sm:text-xl text-gray-700 max-w-4xl mx-auto">
-                We believe the future of education lies in <span className="font-extrabold">empowering the educator</span>. GradifyAI was born from the need to eliminate repetitive tasks, giving teachers back the time and energy to focus on what truly matters: <span className="font-extrabold">mentoring and inspiring students</span>.
+            <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
+              GradifyAI is an <strong className="text-slate-700">AI-powered assignment checking and grading platform</strong> built as a Final Year Project. It helps teachers automate grading, support handwritten submissions via OCR, and gives full control over checking methods — while students get instant AI feedback on every submission.
             </p>
-        </div>
+          </div>
+        </section>
 
-        {/* --- */}
-
-        {/* ======================================================= */}
-        {/* IMPACT AND STATISTICS (Driving Real Change - Optimized) */}
-        {/* ======================================================= */}
-        <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">
-                Driving Real Change
-            </h2>
-            {/* Optimized for mobile: Grid stacks to single column, added shadow for premium look */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 bg-indigo-700 text-white p-6 sm:p-8 rounded-2xl shadow-2xl">
-                {/* Mobile optimization: Grid columns stack on small screens */}
-                {impactMetrics.map((metric, index) => (
-                    <div 
-                        key={index} 
-                        // On small screens, border only appears on bottom for separation
-                        className="text-center p-3 border-b sm:border-r last:border-b-0 last:sm:border-r-0 border-white/20"
-                    >
-                        <p className="text-4xl sm:text-5xl font-extrabold mb-1">
-                            {metric.value}
-                        </p>
-                        <p className="text-xs sm:text-sm font-medium uppercase tracking-wider text-indigo-200">
-                            {metric.label}
-                        </p>
-                    </div>
-                ))}
+        {/* ═══════════════ MISSION + VISION ═══════════════ */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-10 sm:mb-14">
+          <div className="relative overflow-hidden bg-gradient-to-br from-violet-600 to-indigo-700 text-white p-6 sm:p-8 rounded-2xl shadow-premium animate-fade-in-up">
+            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 translate-x-1/2" />
+            <div className="relative z-10">
+              <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center mb-4 border border-white/10">
+                <Target className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold mb-3">Our Mission</h2>
+              <p className="text-violet-100 text-sm leading-relaxed">
+                To build a smart, practical tool that <span className="font-bold text-white">reduces the manual burden of assignment grading</span> for teachers while ensuring students receive instant, constructive feedback — making the evaluation process faster, fairer, and more transparent for everyone involved.
+              </p>
             </div>
-        </div>
+          </div>
+          <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-6 sm:p-8 rounded-2xl shadow-premium animate-fade-in-up animation-delay-100">
+            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 translate-x-1/2" />
+            <div className="relative z-10">
+              <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center mb-4 border border-white/10">
+                <Lightbulb className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold mb-3">Our Vision</h2>
+              <p className="text-emerald-100 text-sm leading-relaxed">
+                To become a <span className="font-bold text-white">reliable educational technology solution</span> that empowers institutions to adopt AI-assisted grading at scale — supporting multiple assignment formats including handwritten work, and maintaining academic integrity through intelligent anti-cheat mechanisms.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        {/* --- */}
+        {/* ═══════════════ PROJECT GOALS ═══════════════ */}
+        <section className="mb-10 sm:mb-14">
+          <div className="text-center mb-7 sm:mb-9">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-2">Why We Built This</p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1.5">Project Goals</h2>
+            <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto">The core problems GradifyAI was designed to solve</p>
+          </div>
 
-        {/* ======================================================= */}
-        {/* MISSION & PILLARS (Mobile: Mission takes full width, Pillars stack) */}
-        {/* ======================================================= */}
-        <div className="mb-16">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-center text-gray-900 mb-8">
-                Our Guiding Principles
-            </h2>
-            
-            {/* Grid Layout: Columns adjust based on screen size */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                
-                {/* Mission Card: Takes full width on mobile, 2/4 on larger screens */}
-                <div className="lg:col-span-2 bg-indigo-600 text-white p-6 sm:p-10 rounded-2xl shadow-2xl border-b-4 border-purple-400">
-                    <Target className="w-8 h-8 sm:w-10 sm:h-10 text-white mb-3" />
-                    <h3 className="text-xl sm:text-2xl font-bold mb-2">
-                        Our Mission
-                    </h3>
-                    <p className="text-indigo-100 leading-relaxed text-sm sm:text-base">
-                        To simplify assignment workflows for educators globally, providing <span className="font-extrabold">unmatched efficiency and accuracy</span> through intelligent automation.
-                    </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            {projectGoals.map((g, i) => (
+              <div key={i} className="group bg-white p-5 sm:p-6 rounded-2xl shadow-card border border-slate-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 animate-fade-in-up" style={{ animationDelay: `${i * 0.08}s` }}>
+                <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl ${g.bg} border ${g.border} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <g.icon className={`w-5 h-5 ${g.color}`} />
                 </div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1.5">{g.title}</h3>
+                <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">{g.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-                {/* Core Pillars Cards: Stack vertically on mobile, turn into 3 columns on larger screens */}
-                {corePillars.map((pillar, index) => (
-                    <div 
-                        key={index} 
-                        className="p-6 bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition duration-300"
-                    >
-                        <div className={`p-3 inline-block rounded-xl ${pillar.color} bg-opacity-10 mb-3`}>
-                            <pillar.icon size={24} className={pillar.color} />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            {pillar.title}
-                        </h3>
-                        <p className="text-gray-600 text-xs">{pillar.description}</p>
+        {/* ═══════════════ WHAT WE BUILT ═══════════════ */}
+        <section className="mb-10 sm:mb-14 animate-fade-in-up">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-card border border-slate-100 p-5 sm:p-8 lg:p-10 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+
+            <div className="text-center mb-6 sm:mb-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-3">
+                <CheckCircle className="w-3.5 h-3.5" /> Real Capabilities
+              </div>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 mb-1.5">What We Built</h2>
+              <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto">Every capability listed here is implemented and working</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl mx-auto">
+              {platformCapabilities.map((cap, i) => (
+                <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                  <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <span className="text-xs sm:text-sm text-slate-700 leading-relaxed">{cap}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════ TECH STACK ═══════════════ */}
+        <section className="mb-10 sm:mb-14">
+          <div className="text-center mb-7 sm:mb-9">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Under the Hood</p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1.5">Technology Stack</h2>
+            <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto">The tools and technologies powering GradifyAI</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+            {techStack.map((tech, i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-card border border-slate-100 p-5 sm:p-6 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${tech.color}`} />
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${tech.color} flex items-center justify-center mb-4 shadow-md`}>
+                  <tech.icon className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3">{tech.category}</h3>
+                <ul className="space-y-2">
+                  {tech.items.map((item, j) => (
+                    <li key={j} className="flex items-center gap-2 text-xs sm:text-sm text-slate-600">
+                      <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${tech.color}`} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ═══════════════ TEAM ═══════════════ */}
+        <section className="mb-10 sm:mb-14">
+          <div className="text-center mb-7 sm:mb-9">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-2">The People Behind It</p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1.5">Meet the Team</h2>
+            <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto">GradifyAI was built by two developers as their Final Year Project</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+            {teamMembers.map((member, i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-card border border-slate-100 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${member.color}`} />
+
+                <div className="p-5 sm:p-7">
+                  {/* Header */}
+                  <div className="flex items-start gap-4 mb-5">
+                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg shrink-0`}>
+                      <member.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                     </div>
-                ))}
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-extrabold text-slate-900">{member.name}</h3>
+                      <p className={`text-xs sm:text-sm font-bold uppercase tracking-wider mt-0.5 ${i === 0 ? "text-emerald-600" : "text-violet-600"}`}>{member.role}</p>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-4">{member.description}</p>
+
+                  {/* Contributions */}
+                  <div className="mb-5">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Key Contributions</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {member.contributions.map((c, j) => (
+                        <span key={j} className={`text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-lg ${i === 0 ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-violet-50 text-violet-700 border border-violet-100"}`}>
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* LinkedIn */}
+                  {member.linkedin !== "#" && (
+                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-violet-50 hover:text-violet-700 hover:border-violet-200 transition-all duration-300">
+                      <HeartHandshake className="w-3.5 h-3.5" /> Connect on LinkedIn
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ═══════════════ PROJECT CONTEXT ═══════════════ */}
+        <section className="mb-8 sm:mb-12 animate-fade-in-up">
+          <div className="relative overflow-hidden bg-gradient-to-r from-violet-700 via-purple-700 to-indigo-700 text-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 shadow-premium">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-36 h-36 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
+                <Rocket className="w-8 h-8 sm:w-10 sm:h-10 text-white/90" />
+              </div>
+              <div className="text-center lg:text-left flex-1">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-2">Built as a Final Year Project</h2>
+                <p className="text-white/80 text-xs sm:text-sm leading-relaxed max-w-2xl">
+                  GradifyAI was developed as a <strong className="text-white">Final Year Project (FYP)</strong> to demonstrate how AI can be practically applied to education. The platform represents months of research, design, and development — combining modern web technologies with intelligent automation to solve a real problem in academic institutions.
+                </p>
+              </div>
+              <Link to="/signup" className="inline-flex items-center gap-2 bg-white text-violet-700 font-extrabold px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 text-sm sm:text-base shrink-0">
+                Try GradifyAI <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
-        </div>
-
-        {/* --- */}
-
-        {/* ======================================================= */}
-        {/* FOUNDER / TEAM SECTION */}
-        {/* ======================================================= */}
-        <div className="p-8 sm:p-10 bg-white border border-gray-200 rounded-3xl text-center shadow-lg mb-16">
-            <Users className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto mb-3" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Meet the Founder: Jamshaid Ali
-            </h2>
-            <p className="text-sm sm:text-lg text-gray-700 max-w-4xl mx-auto mb-6">
-                GradifyAI is rooted in a deep understanding of academic needs. Our focus remains on <span className="font-extrabold">utility, reliability, and academic integrity</span>, ensuring the tool truly supports the learning ecosystem.
-            </p>
-
-            {/* Founder Link */}
-            <div className="mt-4">
-                <a
-                href="https://www.linkedin.com/in/jamshaid-ali-7906192b7/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-indigo-600 font-bold text-base sm:text-xl hover:text-indigo-800 transition-all border-b-2 border-indigo-600 hover:border-indigo-800"
-                >
-                    <HeartHandshake size={20} /> Connect on LinkedIn
-                </a>
-            </div>
-        </div>
-        
-        {/* --- */}
-
-        {/* ======================================================= */}
-        {/* FINAL CTA SECTION (Call to Action) */}
-        {/* ======================================================= */}
-        <div className="mt-8 sm:mt-16 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-3xl p-8 sm:p-16 text-center shadow-2xl">
-          <Rocket className="w-10 h-10 sm:w-14 sm:h-14 mx-auto mb-3" />
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3">
-            Join the Education Revolution Today
-          </h2>
-          <p className="text-base sm:text-lg text-white/90 mb-6 max-w-3xl mx-auto">
-            Experience the efficiency, precision, and freedom that AI-powered assignment management provides. Start saving hours every week.
-          </p>
-          <Link
-            to="/signup"
-            className="bg-white text-purple-700 font-extrabold px-6 py-3 sm:px-8 sm:py-4 rounded-xl shadow-2xl hover:bg-gray-100 transition-all text-lg sm:text-xl transform hover:scale-105 inline-block"
-          >
-            Start Free Trial
-          </Link>
-        </div>
+          </div>
+        </section>
 
       </div>
     </div>

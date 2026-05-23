@@ -1,112 +1,131 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, ArrowLeft, AlertTriangle } from "lucide-react";
+import { PlusCircle, ArrowLeft, AlertCircle, Sparkles } from "lucide-react";
 import BASE_API from "../BaseApi";
+import { useToast } from "../context/ToastContext";
 
 const CreateClass = () => {
-    const navigate = useNavigate();
-    const [className, setClassName] = useState("");
-    const [classCode, setClassCode] = useState("");
-    const [creating, setCreating] = useState(false);
-    const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [className, setClassName] = useState("");
+  const [classCode, setClassCode] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState("");
 
-    const handleCreate = async (e) => {
-        e.preventDefault();
-        const token = localStorage.getItem("access");
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("access");
+    setError("");
 
-        if (!className.trim() || !classCode.trim()) {
-            setError("Please fill in both class name and class code.");
-            return;
-        }
+    if (!className.trim() || !classCode.trim()) {
+      showToast("Please provide both class name and identifier code.", "warning");
+      return;
+    }
 
-        try {
-            setCreating(true);
-            const res = await fetch(`${BASE_API}api/classclassrooms/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    name: className.trim(),
-                    code: classCode.trim(),
-                }),
-            });
+    try {
+      setCreating(true);
+      const res = await fetch(`${BASE_API}api/classclassrooms/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: className.trim(),
+          code: classCode.trim(),
+        }),
+      });
 
-            if (res.ok) {
-                navigate("/teacher");
-            } else {
-                const data = await res.json();
-                setError(
-                    data.name?.[0] || data.code?.[0] || data.detail || "Unexpected error."
-                );
-            }
-        } catch (err) {
-            console.error(err);
-            setError("Network error occurred. Try again.");
-        } finally {
-            setCreating(false);
-        }
-    };
+      if (res.ok) {
+        showToast("Classroom created successfully!", "success");
+        navigate("/teacher");
+      } else {
+        const data = await res.json();
+        const msg = data.name?.[0] || data.code?.[0] || data.detail || "Unexpected validation error.";
+        setError(msg);
+        showToast(msg, "error");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Network connectivity issue. Please try again.");
+      showToast("Network error. Could not create class.", "error");
+    } finally {
+      setCreating(false);
+    }
+  };
 
-    return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-500 hover:text-indigo-600 mb-6 transition-colors"
-                >
-                    <ArrowLeft className="w-5 h-5" /> Back
-                </button>
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+      
+      {/* ═══════════════ BACKGROUND ACCENT BUBBLES ═══════════════ */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div className="absolute -top-[10%] -right-[5%] w-[50%] h-[50%] rounded-full bg-gradient-to-b from-indigo-200/25 to-purple-100/10 blur-[100px] dark:from-indigo-950/20" />
+        <div className="absolute -bottom-[15%] -left-[5%] w-[45%] h-[45%] rounded-full bg-gradient-to-t from-emerald-100/20 to-teal-50/10 blur-[90px] dark:from-emerald-950/10" />
+      </div>
 
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <PlusCircle className="w-8 h-8 text-indigo-600" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Create New Class</h1>
-                    <p className="text-gray-500 mt-2">Set up a new classroom for your students.</p>
-                </div>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl w-full max-w-md p-6 sm:p-10 shadow-xl shadow-slate-100 dark:shadow-none animate-fade-in-up relative z-10">
+        
+        {/* Navigation back */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-450 hover:text-indigo-650 transition mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+        </button>
 
-                {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                        <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
-                        <p className="text-sm text-red-700">{error}</p>
-                    </div>
-                )}
-
-                <form onSubmit={handleCreate} className="space-y-5">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Class Name</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. Advanced Physics"
-                            value={className}
-                            onChange={(e) => setClassName(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Class Code</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. PHY-101"
-                            value={classCode}
-                            onChange={(e) => setClassCode(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={creating}
-                        className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
-                    >
-                        {creating ? "Creating..." : "Create Class"}
-                    </button>
-                </form>
-            </div>
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <PlusCircle className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <h1 className="text-2xl font-black text-slate-850 dark:text-white tracking-tight">Create New Class</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-2 leading-relaxed max-w-xs mx-auto">
+            Establish a smart academic cohort workspace for your students.
+          </p>
         </div>
-    );
+
+        {error && (
+          <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-950/15 border border-rose-100 dark:border-rose-900/30 rounded-2xl flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-455 mt-0.5 shrink-0" />
+            <p className="text-xs font-bold text-rose-800 dark:text-rose-455 leading-relaxed">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleCreate} className="space-y-5">
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-350">Class Name / Title</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Advanced Machine Learning"
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-xs sm:text-sm font-medium"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-350">Unique Class Code</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. CS-402"
+              value={classCode}
+              onChange={(e) => setClassCode(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-xs sm:text-sm font-semibold tracking-wider"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={creating}
+            className="w-full bg-indigo-600 text-white py-3.5 mt-2 rounded-2xl font-extrabold flex items-center justify-center gap-2 hover:bg-indigo-700 active:scale-95 transition shadow-lg shadow-indigo-500/10 disabled:opacity-75 disabled:cursor-not-allowed text-xs sm:text-sm"
+          >
+            {creating ? "Setting up workspace..." : "Establish Classroom"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default CreateClass;
