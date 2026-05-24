@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import {
   Brain, Users, Target, Rocket, GraduationCap, Code2, Server,
   Lightbulb, Eye, ScanText, Copy, ToggleRight, CheckCircle,
-  HeartHandshake, ArrowRight, Sparkles, BookOpen, Layers
+  HeartHandshake, ArrowRight, Sparkles, BookOpen, Layers,
+  Linkedin, Github
 } from "lucide-react";
 
 // ═══════════════════════════════════════
@@ -58,23 +59,27 @@ const techStack = [
 // ═══════════════════════════════════════
 const teamMembers = [
   {
-    name: "Umair Saeed Khan",
+    name: "Umair Saeed",
     role: "Backend Developer",
-    description: "Designed and built the entire backend architecture — Django REST APIs, AI grading engine, OCR integration, database models, JWT authentication, and the assignment evaluation pipeline.",
+    description: "Designed and built the entire backend architecture: Django REST APIs, AI grading engine, OCR integration, database models, JWT authentication, and the assignment evaluation pipeline.",
     icon: Server,
     color: "from-emerald-600 to-teal-600",
     bgGlow: "bg-emerald-500/10",
     linkedin: "https://www.linkedin.com/in/umair-saeed-5659a8340/",
+    github: "https://github.com/UmairSaeed-oss",
+    pic: "/WhatsApp Image 2026-05-11 at 5.39.25 PM.jpeg",
     contributions: ["Django REST APIs", "AI Grading Logic", "OCR Integration", "Database Design", "Authentication System"],
   },
   {
     name: "Muzammal Ikhlaq",
     role: "Frontend Developer & Mobile App Developer",
-    description: "Built the complete user interface — responsive React components, premium UI/UX design, teacher & student dashboards, real-time state management, and seamless API integration.",
+    description: "Built the complete user interface: responsive React components, premium UI/UX design, teacher & student dashboards, real-time state management, and seamless API integration.",
     icon: Code2,
     color: "from-violet-600 to-indigo-600",
     bgGlow: "bg-violet-500/10",
     linkedin: "https://www.linkedin.com/in/muzammal-ikhlaq",
+    github: "https://github.com/muzammal-ikhlaq",
+    pic: "/user.png",
     contributions: ["React UI Components", "Responsive Design", "Dashboard Interfaces", "API Integration", "Mobile App Developer"],
   },
 ];
@@ -132,7 +137,7 @@ const About = () => {
               The Story Behind <span className="gradient-text">GradifyAI</span>
             </h1>
             <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
-              GradifyAI is an <strong className="text-slate-700">AI-powered assignment checking and grading platform</strong> built as a Final Year Project. It helps teachers automate grading, support handwritten submissions via OCR, and gives full control over checking methods — while students get instant AI feedback on every submission.
+              GradifyAI is an <strong className="text-slate-700">AI-powered assignment checking and grading platform</strong> built as a Final Year Project. It helps teachers automate grading, support handwritten submissions via OCR, and gives full control over checking methods: while students get instant AI feedback on every submission.
             </p>
           </div>
         </section>
@@ -254,13 +259,26 @@ const About = () => {
 
                 <div className="p-5 sm:p-7">
                   {/* Header */}
-                  <div className="flex items-start gap-4 mb-5">
-                    <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg shrink-0`}>
-                      <member.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-                    </div>
+                  <div className="flex items-center gap-5 mb-6">
+                    {member.pic ? (
+                      <img 
+                        src={member.pic} 
+                        alt={member.name} 
+                        className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-transform duration-300 hover:scale-105"
+                        style={{ 
+                          imageRendering: "-webkit-optimize-contrast",
+                          backfaceVisibility: "hidden",
+                          transform: "translateZ(0)"
+                        }}
+                      />
+                    ) : (
+                      <div className={`w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg shrink-0 border-2 border-white ring-4 ring-slate-50`}>
+                        <member.icon className="w-14 h-14 sm:w-16 sm:h-16 text-white" />
+                      </div>
+                    )}
                     <div>
-                      <h3 className="text-lg sm:text-xl font-extrabold text-slate-900">{member.name}</h3>
-                      <p className={`text-xs sm:text-sm font-bold uppercase tracking-wider mt-0.5 ${i === 0 ? "text-emerald-600" : "text-violet-600"}`}>{member.role}</p>
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">{member.name}</h3>
+                      <p className={`text-xs sm:text-sm font-bold uppercase tracking-wider mt-1.5 ${i === 0 ? "text-emerald-600" : "text-violet-600"}`}>{member.role}</p>
                     </div>
                   </div>
 
@@ -279,13 +297,21 @@ const About = () => {
                     </div>
                   </div>
 
-                  {/* LinkedIn */}
-                  {member.linkedin !== "#" && (
-                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-violet-50 hover:text-violet-700 hover:border-violet-200 transition-all duration-300">
-                      <HeartHandshake className="w-3.5 h-3.5" /> Connect on LinkedIn
-                    </a>
-                  )}
+                  {/* Social Links */}
+                  <div className="flex flex-wrap gap-2.5">
+                    {member.linkedin && member.linkedin !== "#" && (
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 transition-all duration-300">
+                        <Linkedin className="w-3.5 h-3.5 text-sky-600" /> LinkedIn
+                      </a>
+                    )}
+                    {member.github && member.github !== "#" && (
+                      <a href={member.github} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-slate-900 hover:text-white hover:border-slate-800 transition-all duration-300">
+                        <Github className="w-3.5 h-3.5 text-slate-800" /> GitHub
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
