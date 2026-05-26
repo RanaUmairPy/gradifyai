@@ -46,15 +46,6 @@ const projectGoals = [
 ];
 
 // ═══════════════════════════════════════
-//  TECH STACK
-// ═══════════════════════════════════════
-const techStack = [
-  { category: "Frontend", items: ["React.js (Vite)", "Tailwind CSS", "Lucide Icons", "React Router"], color: "from-violet-600 to-indigo-600", icon: Code2 },
-  { category: "Backend", items: ["Django REST Framework", "Python", "PostgreSQL", "JWT Authentication"], color: "from-emerald-600 to-teal-600", icon: Server },
-  { category: "AI & Tools", items: ["AI Grading Engine", "OCR Processing", "Content Analysis", "Keyword Matching"], color: "from-amber-500 to-orange-600", icon: Brain },
-];
-
-// ═══════════════════════════════════════
 //  TEAM MEMBERS
 // ═══════════════════════════════════════
 const teamMembers = [
@@ -103,8 +94,8 @@ const platformCapabilities = [
 const About = () => {
   useEffect(() => {
     document.title = "About GradifyAI | AI-Powered Assignment Checking Platform";
-    const description = "GradifyAI is a Final Year Project that automates assignment grading using AI, supports handwritten OCR, offers flexible checking modules, and provides complete classroom management.";
-    const keywords = "GradifyAI, about, FYP, final year project, AI grading, assignment checker, Umair Saeed Khan, Muzammal Ikhlaq, education technology, OCR";
+    const description = "GradifyAI is a professional platform that automates assignment grading using AI, supports handwritten OCR, offers flexible checking modules, and provides complete classroom management.";
+    const keywords = "GradifyAI, about, AI grading, assignment checker, Umair Saeed, Muzammal Ikhlaq, education technology, OCR";
     const updateMetaTag = (selector, attribute, content) => {
       let tag = document.querySelector(selector);
       if (tag) { tag.setAttribute(attribute, content); }
@@ -131,13 +122,13 @@ const About = () => {
 
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-50 border border-violet-100 text-violet-700 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-5">
-              <GraduationCap className="w-3.5 h-3.5" /> Final Year Project
+              <GraduationCap className="w-3.5 h-3.5" /> AI Education Platform
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
               The Story Behind <span className="gradient-text">GradifyAI</span>
             </h1>
             <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto leading-relaxed">
-              GradifyAI is an <strong className="text-slate-700">AI-powered assignment checking and grading platform</strong> built as a Final Year Project. It helps teachers automate grading, support handwritten submissions via OCR, and gives full control over checking methods: while students get instant AI feedback on every submission.
+              GradifyAI is an <strong className="text-slate-700">AI-powered assignment checking and grading platform</strong> engineered for modern classrooms. It helps teachers automate grading, support handwritten submissions via OCR, and gives full control over checking methods: while students get instant AI feedback on every submission.
             </p>
           </div>
         </section>
@@ -215,41 +206,11 @@ const About = () => {
           </div>
         </section>
 
-        {/* ═══════════════ TECH STACK ═══════════════ */}
-        <section className="mb-10 sm:mb-14">
-          <div className="text-center mb-7 sm:mb-9">
-            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Under the Hood</p>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1.5">Technology Stack</h2>
-            <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto">The tools and technologies powering GradifyAI</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            {techStack.map((tech, i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-card border border-slate-100 p-5 sm:p-6 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${tech.color}`} />
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${tech.color} flex items-center justify-center mb-4 shadow-md`}>
-                  <tech.icon className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3">{tech.category}</h3>
-                <ul className="space-y-2">
-                  {tech.items.map((item, j) => (
-                    <li key={j} className="flex items-center gap-2 text-xs sm:text-sm text-slate-600">
-                      <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${tech.color}`} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* ═══════════════ TEAM ═══════════════ */}
         <section className="mb-10 sm:mb-14">
           <div className="text-center mb-7 sm:mb-9">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-2">The People Behind It</p>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1.5">Meet the Team</h2>
-            <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto">GradifyAI was built by two developers as their Final Year Project</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
@@ -257,14 +218,14 @@ const About = () => {
               <div key={i} className="bg-white rounded-2xl shadow-card border border-slate-100 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${member.color}`} />
 
-                <div className="p-5 sm:p-7">
+                <div className="p-5 sm:p-6">
                   {/* Header */}
-                  <div className="flex items-center gap-5 mb-6">
+                  <div className="flex items-center gap-4 sm:gap-5">
                     {member.pic ? (
                       <img 
                         src={member.pic} 
                         alt={member.name} 
-                        className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover shadow-lg shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-transform duration-300 hover:scale-105"
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover shadow-md shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-transform duration-300 hover:scale-105"
                         style={{ 
                           imageRendering: "-webkit-optimize-contrast",
                           backfaceVisibility: "hidden",
@@ -272,45 +233,29 @@ const About = () => {
                         }}
                       />
                     ) : (
-                      <div className={`w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-lg shrink-0 border-2 border-white ring-4 ring-slate-50`}>
-                        <member.icon className="w-14 h-14 sm:w-16 sm:h-16 text-white" />
+                      <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-md shrink-0 border-2 border-white ring-4 ring-slate-50`}>
+                        <member.icon className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
                       </div>
                     )}
-                    <div>
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">{member.name}</h3>
-                      <p className={`text-xs sm:text-sm font-bold uppercase tracking-wider mt-1.5 ${i === 0 ? "text-emerald-600" : "text-violet-600"}`}>{member.role}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight mb-3">{member.name}</h3>
+                      
+                      {/* Social Links */}
+                      <div className="flex flex-wrap gap-2">
+                        {member.linkedin && member.linkedin !== "#" && (
+                          <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 transition-all duration-300">
+                            <Linkedin className="w-3.5 h-3.5 text-sky-600" /> LinkedIn
+                          </a>
+                        )}
+                        {member.github && member.github !== "#" && (
+                          <a href={member.github} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-slate-900 hover:text-white hover:border-slate-800 transition-all duration-300">
+                            <Github className="w-3.5 h-3.5 text-slate-800" /> GitHub
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-4">{member.description}</p>
-
-                  {/* Contributions */}
-                  <div className="mb-5">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Key Contributions</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {member.contributions.map((c, j) => (
-                        <span key={j} className={`text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-lg ${i === 0 ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-violet-50 text-violet-700 border border-violet-100"}`}>
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Social Links */}
-                  <div className="flex flex-wrap gap-2.5">
-                    {member.linkedin && member.linkedin !== "#" && (
-                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-sky-50 hover:text-sky-700 hover:border-sky-200 transition-all duration-300">
-                        <Linkedin className="w-3.5 h-3.5 text-sky-600" /> LinkedIn
-                      </a>
-                    )}
-                    {member.github && member.github !== "#" && (
-                      <a href={member.github} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-100 hover:bg-slate-900 hover:text-white hover:border-slate-800 transition-all duration-300">
-                        <Github className="w-3.5 h-3.5 text-slate-800" /> GitHub
-                      </a>
-                    )}
                   </div>
                 </div>
               </div>
@@ -329,9 +274,9 @@ const About = () => {
                 <Rocket className="w-8 h-8 sm:w-10 sm:h-10 text-white/90" />
               </div>
               <div className="text-center lg:text-left flex-1">
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-2">Built as a Final Year Project</h2>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-2">Transforming Classroom Workflows</h2>
                 <p className="text-white/80 text-xs sm:text-sm leading-relaxed max-w-2xl">
-                  GradifyAI was developed as a <strong className="text-white">Final Year Project (FYP)</strong> to demonstrate how AI can be practically applied to education. The platform represents months of research, design, and development — combining modern web technologies with intelligent automation to solve a real problem in academic institutions.
+                  GradifyAI is engineered to demonstrate how artificial intelligence can be practically and securely applied to modern education. The platform represents a next-generation academic checking ecosystem, combining cutting-edge web technologies with intelligent automation to build a highly scalable, reliable solution.
                 </p>
               </div>
               <Link to="/signup" className="inline-flex items-center gap-2 bg-white text-violet-700 font-extrabold px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 text-sm sm:text-base shrink-0">
