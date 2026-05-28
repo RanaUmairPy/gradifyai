@@ -70,7 +70,7 @@ const teamMembers = [
     bgGlow: "bg-violet-500/10",
     linkedin: "https://www.linkedin.com/in/muzammal-ikhlaq",
     github: "https://github.com/muzammal-ikhlaq",
-    pic: "\Muzammal.jpeg",
+    pic: "/Muzammal.jpeg",
     contributions: ["React UI Components", "Responsive Design", "Dashboard Interfaces", "API Integration", "Mobile App Developer"],
   },
 ];
@@ -225,16 +225,11 @@ const About = () => {
                       <img 
                         src={member.pic} 
                         alt={member.name} 
-                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover shadow-md shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-transform duration-300 hover:scale-105"
-                        style={{ 
-                          imageRendering: "-webkit-optimize-contrast",
-                          backfaceVisibility: "hidden",
-                          transform: "translateZ(0)"
-                        }}
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-center shadow-md shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-transform duration-300 hover:scale-105"
                       />
                     ) : (
-                      <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-md shrink-0 border-2 border-white ring-4 ring-slate-50`}>
-                        <member.icon className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+                      <div className={`w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-md shrink-0 border-2 border-white ring-4 ring-slate-50`}>
+                        <member.icon className="w-12 h-12 text-white" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
