@@ -44,7 +44,7 @@ const Header = ({ user, onLogout }) => {
         {/* Logo and branding */}
         <Link to="/" className="flex items-center gap-3 group shrink-0">
           <div className="p-2.5 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-500/10 group-hover:scale-105 transition-transform">
-            <GraduationCap className="w-5.5 h-5.5" />
+            <GraduationCap className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-lg font-black text-slate-850 dark:text-white tracking-tight leading-tight">
@@ -56,13 +56,11 @@ const Header = ({ user, onLogout }) => {
 
         {/* Desktop Nav deck */}
         <div className="hidden md:flex items-center gap-6">
-          {!user && (
-            <nav className="flex items-center gap-1.5">
-              {navLinks.map((l) => (
-                <NavItem key={l.path} link={l} />
-              ))}
-            </nav>
-          )}
+          <nav className="flex items-center gap-1.5">
+            {navLinks.map((l) => (
+              <NavItem key={l.path} link={l} />
+            ))}
+          </nav>
 
 
 
@@ -94,7 +92,7 @@ const Header = ({ user, onLogout }) => {
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-250 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 text-xs font-extrabold transition shadow-sm"
                   title="Create New Classroom Workspace"
                 >
-                  <img src="/studyroom.png" alt="Classroom icon" className="w-5.5 h-5.5 object-contain" />
+                  <img src="/studyroom.png" alt="Classroom icon" className="w-5 h-5 object-contain" />
                   <span>Create Class</span>
                 </Link>
               )}
@@ -106,7 +104,7 @@ const Header = ({ user, onLogout }) => {
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-250 dark:border-indigo-900/30 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/20 text-xs font-extrabold transition shadow-sm"
                   title="Enroll in Classroom Workspace"
                 >
-                  <img src="/studyroom.png" alt="Enroll icon" className="w-5.5 h-5.5 object-contain" />
+                  <img src="/studyroom.png" alt="Enroll icon" className="w-5 h-5 object-contain" />
                   <span>Join Class</span>
                 </Link>
               )}
@@ -148,7 +146,7 @@ const Header = ({ user, onLogout }) => {
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-850 border border-transparent hover:border-slate-200/60 dark:hover:border-slate-800 transition text-slate-800 dark:text-white"
           >
-            {isOpen ? <X className="w-5.5 h-5.5" /> : <Menu className="w-5.5 h-5.5" />}
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
@@ -160,7 +158,7 @@ const Header = ({ user, onLogout }) => {
         }`}
       >
         <div className="px-4 pb-5 pt-2 space-y-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
-          {!user && navLinks.map((link) => (
+          {navLinks.map((link) => (
             <NavItem key={link.path} link={link} />
           ))}
           

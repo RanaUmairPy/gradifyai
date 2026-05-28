@@ -337,7 +337,7 @@ const AssignmentDetails = ({ assignmentId }) => {
             }`}>
               
               <h3 className="text-lg font-bold text-slate-850 dark:text-white mb-6 flex items-center gap-2">
-                <Upload className="w-5.5 h-5.5 text-indigo-500" />
+                <Upload className="w-6 h-6 text-indigo-500" />
                 Submit Assignment Work
               </h3>
 

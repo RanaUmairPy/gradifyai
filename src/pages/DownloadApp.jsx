@@ -16,24 +16,22 @@ const DownloadApp = () => {
 
   const appScreens = [
     {
-      title: "Clean Student Dashboard",
-      desc: "Overview of coursework performance, GPA statistics, and grade trackers optimized for modern displays.",
-      stat: "4.8★ UI Rating"
+      title: "Elegant App Splash Desk",
+      desc: "Branded initial splash workspace representing the official Final Year Project by Umair Saeed Khan and Muzammal Ikhlaq.",
+      stat: "v1.0 Release",
+      image: "/app_screen1.jpg"
     },
     {
-      title: "Mobile OCR Scanner Desk",
-      desc: "Capture handwritten assignments with your phone camera. Our mobile OCR extracts draft prose instantly.",
-      stat: "Sub-Second Processing"
+      title: "Unified Workspace Drawer",
+      desc: "Access course feeds, trigger classroom actions, view user manuals, configure profile settings, and access direct developer support.",
+      stat: "Faculty Dashboard",
+      image: "/app_screen2.jpg"
     },
     {
-      title: "Instant Push Notifications",
-      desc: "Receive real-time alerts when assignments are created, grades are updated, or overrides are saved.",
-      stat: "0.2s Latency"
-    },
-    {
-      title: "Offline Classroom Mode",
-      desc: "Access course resources, read instruction guides, and review syllabus lists without active cellular links.",
-      stat: "Local Caching"
+      title: "Interactive Classroom Feed",
+      desc: "Students can browse registered subjects (Calculus, DSA, PF) with distinct indicators, and enroll instantly with unique join codes.",
+      stat: "Student Workspace",
+      image: "/app_screen3.jpg"
     }
   ];
 
@@ -186,59 +184,21 @@ const DownloadApp = () => {
               <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600 to-indigo-600 rounded-3xl blur-[30px] opacity-30 group-hover:opacity-45 transition duration-500" />
               
               {/* Phone frame wrapper */}
-              <div className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[3rem] border-8 border-slate-950 bg-slate-950 shadow-2xl overflow-hidden flex flex-col justify-between p-2">
+              <div className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[3rem] border-8 border-slate-950 bg-slate-950 shadow-2xl overflow-hidden p-1 flex flex-col justify-between">
                 
                 {/* Speaker top camera notch */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-4.5 bg-slate-950 rounded-full z-30 flex items-center justify-end px-4">
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-4.5 bg-slate-950 rounded-full z-30 flex items-center justify-center">
                   <div className="w-2 h-2 bg-slate-900 rounded-full mr-2" />
                   <div className="w-1.5 h-1.5 bg-indigo-900/60 rounded-full" />
                 </div>
 
-                {/* Simulated Screen Body */}
-                <div className="flex-1 bg-slate-900 rounded-[2.5rem] p-4 flex flex-col justify-between overflow-hidden relative border border-slate-850">
-                  <div className="absolute inset-0 bg-gradient-to-b from-indigo-950/20 via-slate-900/40 to-slate-900 pointer-events-none" />
-
-                  {/* App Header */}
-                  <div className="relative z-10 pt-4 flex justify-between items-center border-b border-slate-850 pb-3">
-                    <div className="flex items-center gap-1.5">
-                      <GraduationCap className="w-5 h-5 text-indigo-400" />
-                      <span className="text-[10px] font-black tracking-wide text-white uppercase">GradifyAI</span>
-                    </div>
-                    <span className="text-[8px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded-full font-black uppercase">v1.0</span>
-                  </div>
-
-                  {/* App Dashboard Graphic */}
-                  <div className="relative z-10 my-auto space-y-4">
-                    <div className="p-3 bg-white/5 border border-white/5 rounded-2xl">
-                      <span className="text-[8px] text-slate-400 uppercase font-black tracking-widest block">Average Mark</span>
-                      <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-2xl font-black text-white">88.5</span>
-                        <span className="text-[10px] text-emerald-400 font-bold">/ 100</span>
-                      </div>
-                      <div className="h-1.5 bg-slate-850 rounded-full mt-2.5 overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full w-[88%]" />
-                      </div>
-                    </div>
-
-                    <div className="p-3 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                      <span className="text-[8px] text-slate-400 uppercase font-black tracking-widest block">OCR Camera Feed</span>
-                      <div className="h-20 bg-slate-950 rounded-xl flex items-center justify-center border border-dashed border-slate-800 relative group-hover:border-indigo-500/40 transition">
-                        <Camera className="w-6 h-6 text-slate-600 group-hover:text-indigo-400 transition" />
-                        <span className="absolute bottom-1.5 text-[8px] text-slate-500">Awaiting OCR Scan</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* App Bottom Navigation */}
-                  <div className="relative z-10 flex justify-around border-t border-slate-850 pt-2 text-[8px] text-slate-500">
-                    <span className="text-indigo-400 font-extrabold">Home</span>
-                    <span>Submit</span>
-                    <span>Grades</span>
-                  </div>
-                </div>
+                <img 
+                  src="/app_screen3.jpg" 
+                  alt="GradifyAI Student Dashboard Mobile" 
+                  className="w-full h-full object-cover rounded-[2.5rem]"
+                />
 
               </div>
-
             </div>
           </div>
 
@@ -317,68 +277,18 @@ const DownloadApp = () => {
           <div className="md:col-span-7 flex justify-center bg-white/40 dark:bg-slate-900/10 backdrop-blur rounded-2xl p-6 border border-slate-200/40 dark:border-slate-800 relative min-h-[300px] items-center">
             
             {/* Screenshot Panel */}
-            <div className="w-[180px] h-[340px] rounded-[2rem] bg-slate-950 border-4 border-slate-900 shadow-xl overflow-hidden p-1 flex flex-col justify-between text-white relative">
-              <div className="flex-1 bg-slate-900 rounded-[1.6rem] p-3 flex flex-col justify-between text-left overflow-hidden">
+            <div className="w-[190px] h-[360px] rounded-[2rem] bg-slate-950 border-4 border-slate-900 shadow-xl overflow-hidden p-1 flex flex-col justify-between text-white relative">
+              <div className="flex-1 bg-slate-900 rounded-[1.6rem] flex flex-col justify-between overflow-hidden relative">
                 
                 {/* Notch */}
-                <div className="w-20 h-3 bg-slate-950 rounded-full mx-auto mb-2" />
-                
-                {/* Dynamic Screen */}
-                {activeSlide === 0 && (
-                  <div className="space-y-2 flex-1 flex flex-col justify-center animate-fade-in">
-                    <span className="text-[7px] text-slate-400 block font-bold">COURSEWORK STATUS</span>
-                    <div className="space-y-1.5">
-                      <div className="p-1.5 bg-white/5 rounded-lg text-[8px] flex justify-between border border-white/5">
-                        <span>Calculus III</span>
-                        <span className="text-indigo-400 font-bold">A-</span>
-                      </div>
-                      <div className="p-1.5 bg-white/5 rounded-lg text-[8px] flex justify-between border border-white/5">
-                        <span>Database Design</span>
-                        <span className="text-indigo-400 font-bold">A+</span>
-                      </div>
-                      <div className="p-1.5 bg-white/5 rounded-lg text-[8px] flex justify-between border border-white/5">
-                        <span>Technical Writing</span>
-                        <span className="text-indigo-400 font-bold">B</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-3 bg-slate-950 rounded-full z-15 flex items-center justify-center pointer-events-none" />
 
-                {activeSlide === 1 && (
-                  <div className="space-y-2 flex-1 flex flex-col justify-center animate-fade-in text-center">
-                    <Camera className="w-8 h-8 text-amber-400 mx-auto animate-pulse" />
-                    <span className="text-[8px] text-white font-bold block mt-1">Extracting Ink Text</span>
-                    <span className="text-[6px] text-slate-400 leading-relaxed block max-w-[120px] mx-auto">
-                      "Evaluating limit equations using critical derivative boundaries..."
-                    </span>
-                  </div>
-                )}
-
-                {activeSlide === 2 && (
-                  <div className="space-y-2 flex-1 flex flex-col justify-center animate-fade-in">
-                    <div className="p-2 bg-indigo-650 rounded-xl text-[8px] space-y-1">
-                      <div className="flex justify-between font-bold">
-                        <span>GradifyAI Push</span>
-                        <span>Now</span>
-                      </div>
-                      <p className="text-[6.5px] text-indigo-100 leading-normal">Grade released: Assignment 'Calculus III' has been finalized with score 92%.</p>
-                    </div>
-                  </div>
-                )}
-
-                {activeSlide === 3 && (
-                  <div className="space-y-2 flex-1 flex flex-col justify-center animate-fade-in text-center">
-                    <WifiOff className="w-8 h-8 text-emerald-400 mx-auto" />
-                    <span className="text-[8px] text-white font-bold block mt-1">Local Draft Sync</span>
-                    <span className="text-[6px] text-slate-400 block">Classrooms saved offline. Ready to sync back.</span>
-                  </div>
-                )}
-
-                {/* Bottom navigation */}
-                <div className="flex justify-around border-t border-slate-800 pt-1.5 text-[6px] text-slate-500">
-                  <span>Home</span>
-                  <span>Classes</span>
-                </div>
+                <img 
+                  src={appScreens[activeSlide].image} 
+                  alt={appScreens[activeSlide].title} 
+                  className="w-full h-full object-cover rounded-[1.6rem] animate-fade-in"
+                  key={activeSlide}
+                />
               </div>
             </div>
 

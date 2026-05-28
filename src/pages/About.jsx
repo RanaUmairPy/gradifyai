@@ -70,7 +70,7 @@ const teamMembers = [
     bgGlow: "bg-violet-500/10",
     linkedin: "https://www.linkedin.com/in/muzammal-ikhlaq",
     github: "https://github.com/muzammal-ikhlaq",
-    pic: "/user.png",
+    pic: "\Muzammal.jpeg",
     contributions: ["React UI Components", "Responsive Design", "Dashboard Interfaces", "API Integration", "Mobile App Developer"],
   },
 ];
@@ -220,7 +220,7 @@ const About = () => {
 
                 <div className="p-5 sm:p-6">
                   {/* Header */}
-                  <div className="flex items-center gap-4 sm:gap-5">
+                  <div className="flex items-start gap-4 sm:gap-5">
                     {member.pic ? (
                       <img 
                         src={member.pic} 
@@ -238,7 +238,10 @@ const About = () => {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight mb-3">{member.name}</h3>
+                      <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight mb-1">{member.name}</h3>
+                      <p className={`text-xs sm:text-sm font-semibold bg-gradient-to-r ${member.color} bg-clip-text text-transparent mb-3`}>
+                        {member.role}
+                      </p>
                       
                       {/* Social Links */}
                       <div className="flex flex-wrap gap-2">
@@ -257,6 +260,27 @@ const About = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Bio / Description */}
+                  <div className="mt-4 pt-4 border-t border-slate-100">
+                    <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                      {member.description}
+                    </p>
+                  </div>
+
+                  {/* Key Contributions */}
+                  {member.contributions && member.contributions.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-dashed border-slate-100">
+                      <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Key Contributions</h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {member.contributions.map((contribution, index) => (
+                          <span key={index} className="inline-flex items-center text-[10px] sm:text-xs px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 border border-slate-100 font-medium">
+                            {contribution}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
