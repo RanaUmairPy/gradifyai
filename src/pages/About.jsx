@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Brain, Users, Target, Rocket, GraduationCap, Code2, Server,
   Lightbulb, Eye, ScanText, Copy, ToggleRight, CheckCircle,
   HeartHandshake, ArrowRight, Sparkles, BookOpen, Layers,
-  Linkedin, Github
+  Linkedin, Github, X
 } from "lucide-react";
 
 // ═══════════════════════════════════════
@@ -92,6 +92,8 @@ const platformCapabilities = [
 ];
 
 const About = () => {
+  const [zoomedImage, setZoomedImage] = useState(null);
+
   useEffect(() => {
     document.title = "About GradifyAI | AI-Powered Assignment Checking Platform";
     const description = "GradifyAI is a professional platform that automates assignment grading using AI, supports handwritten OCR, offers flexible checking modules, and provides complete classroom management.";
@@ -225,7 +227,9 @@ const About = () => {
                       <img 
                         src={member.pic} 
                         alt={member.name} 
-                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-center shadow-md shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-transform duration-300 hover:scale-105"
+                        onClick={() => setZoomedImage(member.pic)}
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-center shadow-md shrink-0 border-2 border-slate-100 ring-4 ring-slate-50 transition-all duration-300 hover:scale-105 cursor-zoom-in"
+                        title="Click to enlarge image"
                       />
                     ) : (
                       <div className={`w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-r ${member.color} flex items-center justify-center shadow-md shrink-0 border-2 border-white ring-4 ring-slate-50`}>
@@ -306,6 +310,33 @@ const About = () => {
         </section>
 
       </div>
+
+      {/* Profile Image Zoom Lightbox Modal */}
+      {zoomedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md animate-fade-in p-4 sm:p-6 cursor-zoom-out"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl border border-slate-200/20 dark:border-slate-800/30 bg-white dark:bg-slate-900 shadow-2xl p-2 sm:p-3 animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className="absolute top-4 right-4 z-10 p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-950/90 text-white transition-all duration-300 border border-white/10 shadow-lg"
+              onClick={() => setZoomedImage(null)}
+              title="Close Image"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img 
+              src={zoomedImage} 
+              alt="Enlarged team member headshot" 
+              className="max-w-full max-h-[80vh] rounded-2xl object-contain shadow-premium" 
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
