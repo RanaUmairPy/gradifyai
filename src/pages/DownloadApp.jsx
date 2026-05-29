@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { 
-  Smartphone, Download, ExternalLink, Sparkles, Camera, BellRing, 
-  WifiOff, BarChart3, Check, Star, ShieldCheck, ArrowRight, 
+import {
+  Smartphone, Download, ExternalLink, Sparkles, Camera, BellRing,
+  WifiOff, BarChart3, Check, Star, ShieldCheck, ArrowRight,
   Laptop, ChevronRight, GraduationCap
 } from "lucide-react";
 import { useToast } from "../context/ToastContext";
@@ -22,16 +22,46 @@ const DownloadApp = () => {
       image: "/app_screen1.jpg"
     },
     {
-      title: "Unified Workspace Drawer",
-      desc: "Access course feeds, trigger classroom actions, view user manuals, configure profile settings, and access direct developer support.",
-      stat: "Faculty Dashboard",
-      image: "/app_screen2.jpg"
+      title: "Handwritten OCR & Smart Scanner",
+      desc: "Snap photos of handwritten pages. The premium document scanner automatically aligns, crops, filters, and extracts editable digital text in real-time.",
+      stat: "Intelligent OCR Desk",
+      image: "/app_new1.jpg"
+    },
+    {
+      title: "Semantic AI Grading Suite",
+      desc: "Evaluate essay content, keywords, and semantic quality. Generate instant constructive feedback and objective scores with state-of-the-art AI.",
+      stat: "AI Evaluation Engine",
+      image: "/app_new2.jpg"
+    },
+    {
+      title: "Interactive Grade Analytics",
+      desc: "Unlock data-driven classroom insights. Beautiful bar graphs, visual progress gauges, and metrics track averages and submission rates natively.",
+      stat: "Visual Analytics",
+      image: "/app_new3.jpg"
+    },
+    {
+      title: "Secure Workspace Sign-in",
+      desc: "Authenticate safely into your dashboard. Elegant forms with responsive design and modern JWT auth architecture.",
+      stat: "JWT Authentication",
+      image: "/app_new4.jpg"
     },
     {
       title: "Interactive Classroom Feed",
       desc: "Students can browse registered subjects (Calculus, DSA, PF) with distinct indicators, and enroll instantly with unique join codes.",
       stat: "Student Workspace",
       image: "/app_screen3.jpg"
+    },
+    {
+      title: "Unified Workspace Drawer",
+      desc: "Access course feeds, trigger classroom actions, view user manuals, configure profile settings, and access direct developer support.",
+      stat: "Faculty Dashboard",
+      image: "/app_screen2.jpg"
+    },
+    {
+      title: "Interactive Submissions Hub",
+      desc: "Submit digital files or trigger real-time handwritten scans with instant camera/gallery upload options and status tracking.",
+      stat: "Instant Submissions",
+      image: "/app_new5.jpg"
     }
   ];
 
@@ -115,13 +145,13 @@ const DownloadApp = () => {
 
       {/* ═══════════════ HERO HEADER PANEL ═══════════════ */}
       <section className="relative rounded-3xl overflow-hidden bg-slate-900 text-white p-6 sm:p-12 lg:p-16 shadow-premium border border-slate-800">
-        
+
         {/* Visual SaaS background accents */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-indigo-600/30 to-purple-600/30 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          
+
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-violet-300 text-[10px] sm:text-xs font-black uppercase tracking-widest border border-white/10">
               <Sparkles className="w-3.5 h-3.5" /> TAKING LEARNING BEYOND THE DESKTOP
@@ -139,7 +169,7 @@ const DownloadApp = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-              <a 
+              <a
                 href={apkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -149,7 +179,7 @@ const DownloadApp = () => {
                 <Download className="w-4.5 h-4.5" /> Download Direct Android APK
               </a>
 
-              <a 
+              <a
                 href={releaseUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -179,22 +209,22 @@ const DownloadApp = () => {
           {/* Interactive CSS Device Mockup */}
           <div className="lg:col-span-5 flex justify-center">
             <div className="relative group select-none">
-              
+
               {/* Branded backdrop glow */}
               <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600 to-indigo-600 rounded-3xl blur-[30px] opacity-30 group-hover:opacity-45 transition duration-500" />
-              
+
               {/* Phone frame wrapper */}
               <div className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[3rem] border-8 border-slate-950 bg-slate-950 shadow-2xl overflow-hidden p-1 flex flex-col justify-between">
-                
+
                 {/* Speaker top camera notch */}
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-4.5 bg-slate-950 rounded-full z-30 flex items-center justify-center">
                   <div className="w-2 h-2 bg-slate-900 rounded-full mr-2" />
                   <div className="w-1.5 h-1.5 bg-indigo-900/60 rounded-full" />
                 </div>
 
-                <img 
-                  src="/app_screen3.jpg" 
-                  alt="GradifyAI Student Dashboard Mobile" 
+                <img
+                  src="/app_new3.jpg"
+                  alt="GradifyAI Student Dashboard Mobile"
                   className="w-full h-full object-cover rounded-[2.5rem]"
                 />
 
@@ -218,7 +248,7 @@ const DownloadApp = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feat, idx) => (
-            <div 
+            <div
               key={idx}
               className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-5 hover:shadow transition"
             >
@@ -234,7 +264,7 @@ const DownloadApp = () => {
 
       {/* ═══════════════ SCREENSHOTS CAROUSEL ═══════════════ */}
       <section className="bg-slate-50 dark:bg-slate-900/20 border border-slate-200/60 dark:border-slate-800/80 rounded-[2rem] p-6 sm:p-10 lg:p-12 space-y-8 relative overflow-hidden">
-        
+
         <div className="absolute top-0 left-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -242,7 +272,7 @@ const DownloadApp = () => {
             <span className="text-[10px] font-black text-indigo-650 dark:text-indigo-400 uppercase tracking-widest block">SCREEN REVEALS</span>
             <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white">Seamless Application Walkthrough</h2>
           </div>
-          
+
           <div className="flex gap-2 shrink-0">
             {appScreens.map((_, idx) => (
               <button
@@ -266,7 +296,7 @@ const DownloadApp = () => {
             <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
               {appScreens[activeSlide].desc}
             </p>
-            <button 
+            <button
               onClick={() => setActiveSlide((activeSlide + 1) % appScreens.length)}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs inline-flex items-center gap-1.5 group hover:underline pt-2"
             >
@@ -275,17 +305,17 @@ const DownloadApp = () => {
           </div>
 
           <div className="md:col-span-7 flex justify-center bg-white/40 dark:bg-slate-900/10 backdrop-blur rounded-2xl p-6 border border-slate-200/40 dark:border-slate-800 relative min-h-[300px] items-center">
-            
+
             {/* Screenshot Panel */}
             <div className="w-[190px] h-[360px] rounded-[2rem] bg-slate-950 border-4 border-slate-900 shadow-xl overflow-hidden p-1 flex flex-col justify-between text-white relative">
               <div className="flex-1 bg-slate-900 rounded-[1.6rem] flex flex-col justify-between overflow-hidden relative">
-                
+
                 {/* Notch */}
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-3 bg-slate-950 rounded-full z-15 flex items-center justify-center pointer-events-none" />
 
-                <img 
-                  src={appScreens[activeSlide].image} 
-                  alt={appScreens[activeSlide].title} 
+                <img
+                  src={appScreens[activeSlide].image}
+                  alt={appScreens[activeSlide].title}
                   className="w-full h-full object-cover rounded-[1.6rem] animate-fade-in"
                   key={activeSlide}
                 />
@@ -346,13 +376,13 @@ const DownloadApp = () => {
 
       {/* ═══════════════ INSTALLATION GUIDE & QR CODE ═══════════════ */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        
+
         {/* Step-by-Step APK Guide */}
         <div className="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 flex flex-col justify-between">
           <div className="space-y-4">
             <h3 className="text-lg sm:text-xl font-extrabold text-slate-800 dark:text-white">Android Sideloading Quick Guide</h3>
             <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm">Since our mobile client is currently distributed as a direct APK, follow these quick steps to set it up on your Android device:</p>
-            
+
             <div className="space-y-3.5 pt-4">
               {[
                 { step: "01", text: "Download the verified app-release.apk file using our direct download links." },
@@ -372,7 +402,7 @@ const DownloadApp = () => {
 
           <div className="pt-6 border-t border-slate-100 dark:border-slate-800 mt-6 flex flex-wrap gap-4 items-center justify-between">
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">Currently targeted for Android 8.0+ devices</span>
-            <a 
+            <a
               href={repoUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -386,12 +416,12 @@ const DownloadApp = () => {
         {/* Play Store coming soon panel */}
         <div className="lg:col-span-4 bg-indigo-600 text-white rounded-[2rem] p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden shadow-premium">
           <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none" />
-          
+
           <div className="space-y-4 text-center">
             <span className="text-[9px] font-black bg-white/15 px-2.5 py-1 rounded-full uppercase tracking-wider inline-block border border-white/10">SCAN TO SYNC</span>
             <h3 className="text-lg font-black tracking-tight">Direct Phone Install</h3>
             <p className="text-indigo-150 text-[11px] sm:text-xs">Copy or scan the download link to download the APK directly on your smartphone.</p>
-            
+
             {/* Styled interactive QR simulation box */}
             <div className="w-36 h-36 mx-auto bg-white rounded-2xl p-2.5 shadow-lg border border-indigo-200/20 flex flex-col items-center justify-between group cursor-pointer active:scale-95 transition" onClick={handleCopyLink}>
               <div className="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center border border-dashed border-slate-300 relative">
@@ -419,7 +449,7 @@ const DownloadApp = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {testimonials.map((test, idx) => (
-            <div 
+            <div
               key={idx}
               className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow transition"
             >
