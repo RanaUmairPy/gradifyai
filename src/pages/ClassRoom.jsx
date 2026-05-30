@@ -40,6 +40,7 @@ const ClassRoom = ({ classId }) => {
   
   const [deletingAssignmentId, setDeletingAssignmentId] = useState(null);
   const [deletingInProgress, setDeletingInProgress] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState(null);
   
   const [downloadingCsv, setDownloadingCsv] = useState(false);
 
@@ -235,6 +236,62 @@ const ClassRoom = ({ classId }) => {
       }
     } catch (error) {
       showToast("Network error. Please verify coordinates.", "error");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleUpdateAssignment = async (formData, file, onSuccess) => {
+    if (!formData) {
+      setEditingAssignment(null);
+      return;
+    }
+    const token = localStorage.getItem("access");
+    const data = new FormData();
+
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("max_marks", formData.max_marks);
+    data.append("min_words", formData.min_words);
+    data.append("show_openai_score", formData.show_openai_score);
+    data.append("show_model_score", formData.show_model_score);
+    data.append("show_teacher_marks", formData.show_teacher_marks);
+
+    const keywords = formData.required_keywords.split(",").map(k => k.trim()).filter(k => k);
+    keywords.forEach(k => data.append("required_keywords", k));
+
+    data.append("classroom", id);
+    data.append("classroom_id", id);
+
+    if (formData.dead_line) {
+      data.append("dead_line", new Date(formData.dead_line).toISOString());
+    }
+
+    if (file) {
+      data.append("file", file);
+    }
+
+    try {
+      setCreating(true);
+      const res = await fetch(`${BASE_API}api/classassignments/${editingAssignment.id}/`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: data,
+      });
+
+      if (res.ok) {
+        showToast("Assignment updated successfully!", "success");
+        setEditingAssignment(null);
+        if (onSuccess) onSuccess();
+        refreshAssignments();
+      } else {
+        const errData = await res.json();
+        showToast(errData.detail || "Failed to update assignment details", "error");
+      }
+    } catch (error) {
+      showToast("Network error. Please try again.", "error");
     } finally {
       setCreating(false);
     }
@@ -443,6 +500,7 @@ const ClassRoom = ({ classId }) => {
               <AssignmentList
                 assignments={assignments}
                 onDelete={(assignmentId) => setDeletingAssignmentId(assignmentId)}
+                onEdit={(assignment) => setEditingAssignment(assignment)}
                 isTeacher={user?.is_teacher}
               />
             </div>
@@ -680,6 +738,22 @@ const ClassRoom = ({ classId }) => {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* 4. Edit/Update Assignment Modal */}
+      <Modal
+        isOpen={!!editingAssignment}
+        onClose={() => setEditingAssignment(null)}
+        maxWidth="max-w-2xl"
+        title="Edit Class Assignment"
+      >
+        {editingAssignment && (
+          <AssignmentForm
+            initialData={editingAssignment}
+            onSubmit={handleUpdateAssignment}
+            creating={creating}
+          />
+        )}
       </Modal>
 
     </div>

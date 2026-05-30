@@ -1,36 +1,51 @@
 import React, { useState } from "react";
 import { Save, Calendar, FileText, CheckSquare, Settings, Sparkles, BookOpen, AlertCircle, FileUp } from "lucide-react";
 
-const AssignmentForm = ({ onSubmit, creating }) => {
+const AssignmentForm = ({ onSubmit, creating, initialData }) => {
+  const getDeadlineString = (isoString) => {
+    if (!isoString) return "";
+    try {
+      const d = new Date(isoString);
+      const pad = (num) => String(num).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    } catch (e) {
+      return "";
+    }
+  };
+
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    max_marks: "",
-    min_words: "",
-    dead_line: "",
-    required_keywords: "",
-    show_openai_score: true,
-    show_model_score: true,
-    show_teacher_marks: true,
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    max_marks: initialData?.max_marks || "",
+    min_words: initialData?.min_words || "",
+    dead_line: getDeadlineString(initialData?.dead_line),
+    required_keywords: Array.isArray(initialData?.required_keywords)
+      ? initialData.required_keywords.join(", ")
+      : initialData?.required_keywords || "",
+    show_openai_score: initialData?.show_openai_score !== undefined ? initialData.show_openai_score : true,
+    show_model_score: initialData?.show_model_score !== undefined ? initialData.show_model_score : true,
+    show_teacher_marks: initialData?.show_teacher_marks !== undefined ? initialData.show_teacher_marks : true,
   });
   const [file, setFile] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData, file, () => {
-      // Reset callback
-      setFormData({
-        title: "",
-        description: "",
-        max_marks: "",
-        min_words: "",
-        dead_line: "",
-        required_keywords: "",
-        show_openai_score: true,
-        show_model_score: true,
-        show_teacher_marks: true,
-      });
-      setFile(null);
+      // Reset callback (only on create)
+      if (!initialData) {
+        setFormData({
+          title: "",
+          description: "",
+          max_marks: "",
+          min_words: "",
+          dead_line: "",
+          required_keywords: "",
+          show_openai_score: true,
+          show_model_score: true,
+          show_teacher_marks: true,
+        });
+        setFile(null);
+      }
     });
   };
 
@@ -108,7 +123,7 @@ const AssignmentForm = ({ onSubmit, creating }) => {
           <label className="text-xs font-bold text-slate-700">Reference Document</label>
           <div className="relative border border-slate-200 rounded-2xl bg-slate-50/50 px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-100/50 transition">
             <span className="text-xs text-slate-500 font-bold truncate max-w-[150px]">
-              {file ? file.name : "Add Attachment"}
+              {file ? file.name : initialData?.file ? "Keep existing file" : "Add Attachment"}
             </span>
             <FileUp className="w-4 h-4 text-slate-450 shrink-0" />
             <input
@@ -218,11 +233,11 @@ const AssignmentForm = ({ onSubmit, creating }) => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              Creating...
+              Saving...
             </>
           ) : (
             <>
-              <Save className="w-4 h-4" /> Save Assignment
+              <Save className="w-4 h-4" /> {initialData ? "Update Assignment" : "Save Assignment"}
             </>
           )}
         </button>

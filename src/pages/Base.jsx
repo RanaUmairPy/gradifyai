@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Routes, Route, Navigate, Link } from "react-r
 import { 
   Menu, X, BookOpen, User, LogOut, Sun, Moon, 
   GraduationCap, Plus, Users, LayoutDashboard, ChevronRight, 
-  ChevronLeft, Award, Settings, Bell
+  ChevronLeft, Award, Settings
 } from "lucide-react";
 import BASE_API from "../BaseApi";
 import Header from "../components/Header";
@@ -79,6 +79,18 @@ const Base = () => {
 
     fetchSidebarClasses();
   }, [user, location.pathname]);
+
+  // Prevent background scrolling when mobile sidebar drawer is open
+  useEffect(() => {
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileSidebarOpen]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -302,14 +314,14 @@ const Base = () => {
 
       {/* ═══════════════ MOBILE DRAWER SIDEBAR ═══════════════ */}
       {mobileSidebarOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex">
+        <div className="md:hidden fixed inset-0 z-50 flex h-[100dvh] overflow-hidden">
           {/* Overlay backdrop */}
           <div 
             onClick={() => setMobileSidebarOpen(false)}
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm"
           />
           
-          <aside className="relative flex flex-col w-4/5 max-w-sm bg-white dark:bg-slate-900 h-full shadow-2xl z-50 border-r border-slate-200 dark:border-slate-800 animate-slide-in-right">
+          <aside className="relative flex flex-col w-4/5 max-w-sm bg-white dark:bg-slate-900 h-[100dvh] shadow-2xl z-50 border-r border-slate-200 dark:border-slate-800 animate-slide-in-right">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow">
@@ -449,14 +461,6 @@ const Base = () => {
           {/* Topbar Actions */}
           <div className="flex items-center gap-3">
             
-            {/* Quick dashboard indicators */}
-            <button className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 shadow shadow-indigo-500/50" />
-            </button>
-
-            <span className="h-6 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block" />
-
             {/* Profile trigger */}
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 text-white font-black text-xs flex items-center justify-center border border-indigo-200 dark:border-indigo-900 shadow">

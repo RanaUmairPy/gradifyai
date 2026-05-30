@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FileText, Calendar, Download, CheckCircle, Briefcase, Trash2, ArrowRight } from "lucide-react";
+import { FileText, Calendar, Download, CheckCircle, Briefcase, Trash2, ArrowRight, Edit } from "lucide-react";
 import { Badge } from "./ui/Badge";
 
-const AssignmentList = ({ assignments, onDelete, isTeacher }) => {
+const AssignmentList = ({ assignments, onDelete, onEdit, isTeacher }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "No Deadline";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -125,6 +125,14 @@ const AssignmentList = ({ assignments, onDelete, isTeacher }) => {
                       <Download className="w-3.5 h-3.5" />
                     </a>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => onEdit(assignment)}
+                    className="p-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-650 dark:text-indigo-400 transition border border-indigo-150/40 dark:border-indigo-900/30"
+                    title="Edit classroom assignment"
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => onDelete(assignment.id)}

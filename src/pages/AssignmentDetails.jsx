@@ -290,7 +290,7 @@ const AssignmentDetails = ({ assignmentId }) => {
               </p>
             </div>
 
-            {assignment.file && (
+            {isTeacher && assignment.file && (
               <div className="border-t border-slate-100 dark:border-slate-800/80 pt-5">
                 <a
                   href={assignment.file}
