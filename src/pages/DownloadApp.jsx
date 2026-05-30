@@ -10,15 +10,15 @@ const DownloadApp = () => {
   const { showToast } = useToast();
   const [activeSlide, setActiveSlide] = useState(0);
 
-  const apkUrl = "https://github.com/Muzammal-Ikhlaq/gradifyai-mobile-app/releases/download/v1.0.0/app-release.apk";
-  const releaseUrl = "https://github.com/Muzammal-Ikhlaq/gradifyai-mobile-app/releases/tag/v1.0.0";
+  const apkUrl = "https://github.com/Muzammal-Ikhlaq/gradifyai-mobile-app/releases/download/v1.1.0/app-release.apk";
+  const releaseUrl = "https://github.com/Muzammal-Ikhlaq/gradifyai-mobile-app/releases/tag/v1.1.0";
   const repoUrl = "https://github.com/Muzammal-Ikhlaq/gradifyai-mobile-app";
 
   const appScreens = [
     {
       title: "Elegant App Splash Desk",
       desc: "Branded initial splash workspace representing the official Final Year Project by Umair Saeed Khan and Muzammal Ikhlaq.",
-      stat: "v1.0 Release",
+      stat: "v1.1.0 Release",
       image: "/app_screen1.jpg"
     },
     {
@@ -185,7 +185,7 @@ const DownloadApp = () => {
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto bg-white/10 hover:bg-white/15 text-white font-extrabold px-6 py-4 rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm border border-white/10 transition"
               >
-                <ExternalLink className="w-4 h-4" /> View Release Notes (v1.0.0)
+                <ExternalLink className="w-4 h-4" /> View Release Notes (v1.1.0)
               </a>
             </div>
 

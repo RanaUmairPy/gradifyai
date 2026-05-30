@@ -39,11 +39,13 @@ Instructors define class rubrics, monitor real-time student curves on elegant da
 ## 🌟 Key Features
 
 ### For Teachers / Instructors
-* **🏛️ Classroom Orchestrator**: Create digital classrooms and generate instant join codes for student self-enrollment.
+* **🏛️ Classroom Orchestrator & Settings**: Create digital classrooms, generate instant student join codes, and edit classroom names dynamically.
 * **✍️ Smart Rubric Creator**: Build assignments by configuring semantic scoring targets:
   * Mandatory vocabulary keywords (comma-separated lexical checkpoints).
   * Strict minimum word counts and maximum point scales.
   * PDF/Docx reference attachments to supply grading keys.
+* **✏️ Editable & Updatable Assignments:** Update assignment instructions, keywords, word count limits, max marks, deadlines, and checking modes at any time post-creation.
+* **📂 Raw Submissions Viewer:** Review students' raw essay texts, uploaded PDFs, or original scanned photos side-by-side inside the grading screen.
 * **📊 Analytics Dashboard**: Renders real-time statistics:
   * **Grade Distribution Curves**: Live graphical classifications grouped across:
     * **A** (80-100) | **B** (65-79) | **C** (51-64) | **D** (41-49) | **F** (<40)
@@ -118,6 +120,7 @@ gradifyai/
 │   │   ├── Teacher.jsx          # Teacher classrooms summary & stats
 │   │   ├── ClassRoom.jsx        # Enrolled student roster & assignments
 │   │   ├── Student.jsx          # Student homework dashboard
+│   │   ├── DownloadApp.jsx      # Premium Mobile Companion app landing page
 │   │   └── AssignmentDetails.jsx# Submissions portal & AI grading feedback
 │   ├── context/
 │   │   └── AuthContext.jsx      # Global session & token manager
@@ -176,10 +179,23 @@ npm run preview
 
 ---
 
+## 📱 Native Mobile Companion App (v1.1.0)
+
+We have officially launched **v1.1.0** of the **GradifyAI Mobile Companion App**! Visitors can now easily download the release binary directly from the website's new premium **Download App** section.
+
+### Key Mobile Features:
+1. **Smart Document Scanner:** Integrates a physical camera canvas with dynamic alignment boundaries, high-contrast B&W shadows filters, and native Neural OCR digitization.
+2. **Pulsing Mic Dictation Feedback:** Allows instructors to speak their grading feedback out loud, converting voice to text in real-time.
+3. **Zoned Local System Reminders:** Automatically schedules system alerts 24 hours and 1 hour before assignments are due.
+4. **Offline Queue Sync Engine:** Captures student submissions locally if offline and automatically background-syncs to Koyeb cloud databases once connection is re-established.
+5. **Interactive Pinch-to-Zoom Lightbox:** Renders team developer headshots with dynamic, buttery-smooth Hero scale animations and custom gesture pinch/drag viewing.
+
+---
+
 ## 📜 Future Roadmap & License
 
 *  **Plagiarism Radar**: Auto-check similarity metrics between all enrolled student submissions to detect academic collusion.
 *  **Dynamic Audio Critiques**: AI agents generate vocal feedback clips to assist auditory learners.
 *  **Instant LMS Syncing**: Direct export adapters for Canvas LMS, Google Classroom, and Moodle.
 
-Developed by Rana Umair and the GradifyAI Engineering Team. Released under the **MIT License**.
+Developed by Rana Umair, Muzammal Ikhlaq and the GradifyAI Engineering Team. Released under the **MIT License**.
