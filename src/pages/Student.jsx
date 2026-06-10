@@ -3,14 +3,15 @@ import { useNavigate } from "react-router-dom";
 import {
   BookOpen, ChevronRight, AlertTriangle, XCircle, 
   Search, Grid, Layers, PlusCircle, Sparkles, Award, 
-  CheckCircle, HelpCircle, FileText
+  CheckCircle, HelpCircle, FileText, Calendar, Clock
 } from "lucide-react";
 import BASE_API from "../BaseApi";
 import { useToast } from "../context/ToastContext";
 import { ShimmerDashboard } from "../components/ui/Shimmer";
 import { Badge } from "../components/ui/Badge";
 import { Modal } from "../components/ui/Modal";
-import { PerformanceGauge, SubmissionActivityChart } from "../components/ui/Charts";
+import { PerformanceGauge } from "../components/ui/Charts";
+import { ActivityCalendar } from "../components/ui/ActivityCalendar";
 
 const StudentPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ const StudentPage = () => {
   const [classCode, setClassCode] = useState("");
   const [joining, setJoining] = useState(false);
   const [submissions, setSubmissions] = useState([]);
+  const [allAssignments, setAllAssignments] = useState([]);
+  const [submissionsLoaded, setSubmissionsLoaded] = useState(false);
 
   // Calculate statistics dynamically
   const gradedSubmissions = submissions.filter(
@@ -46,6 +49,19 @@ const StudentPage = () => {
     avgPercent = Math.round(totalPercent / gradedSubmissions.length);
     avgScoreStr = `${avgPercent}%`;
   }
+
+  // Filter assignments that have not been submitted yet and are not closed/overdue
+  const pendingAssignments = allAssignments.filter((assign) => {
+    const hasSubmitted = submissions.some(
+      (sub) => sub.assignmentId === assign.id
+    );
+    if (hasSubmitted) return false;
+
+    const isClosed = assign.dead_line && new Date(assign.dead_line) < new Date();
+    if (isClosed) return false;
+
+    return true;
+  });
 
   const getWeeklySubmissionActivity = (subs) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -133,9 +149,11 @@ const StudentPage = () => {
 
   const fetchSubmissions = async (token, loadedClasses) => {
     try {
+      setSubmissionsLoaded(false);
       const activeClasses = loadedClasses || classes;
       if (!activeClasses || activeClasses.length === 0) {
         setSubmissions([]);
+        setSubmissionsLoaded(true);
         return;
       }
 
@@ -150,14 +168,20 @@ const StudentPage = () => {
 
       const assignmentsResults = await Promise.all(assignmentPromises);
       
-      // Extract all assignment IDs
+      // Extract all assignment IDs and flat assignments list
       const allAssignmentIds = [];
+      const flatAssignments = [];
       assignmentsResults.forEach(data => {
         const list = Array.isArray(data) ? data : [];
         list.forEach(assign => {
-          if (assign?.id) allAssignmentIds.push(assign.id);
+          if (assign?.id) {
+            allAssignmentIds.push(assign.id);
+            flatAssignments.push(assign);
+          }
         });
       });
+
+      setAllAssignments(flatAssignments);
 
       if (allAssignmentIds.length === 0) {
         setSubmissions([]);
@@ -168,27 +192,38 @@ const StudentPage = () => {
       const submissionPromises = allAssignmentIds.map(assignId =>
         fetch(`${BASE_API}api/classsubmissions/?assignment_id=${assignId}`, {
           headers: { Authorization: `Bearer ${token}` }
-        }).then(res => res.ok ? res.json() : [])
+        }).then(async res => {
+          if (res.ok) {
+            const data = await res.json();
+            return { assignId, data };
+          }
+          return { assignId, data: [] };
+        })
       );
 
       const submissionsResults = await Promise.all(submissionPromises);
 
       // Filter and accumulate the student's actual submissions
       const allSubmissions = [];
-      submissionsResults.forEach(subData => {
-        if (Array.isArray(subData)) {
-          const mine = subData.filter(s =>
+      submissionsResults.forEach(({ assignId, data }) => {
+        if (Array.isArray(data)) {
+          const mine = data.filter(s =>
             (s.student?.id === user.id) ||
             (s.student?.username === user.username) ||
             (s.student === user.id)
           );
+          mine.forEach(s => {
+            s.assignmentId = assignId;
+          });
           allSubmissions.push(...mine);
         }
       });
 
       setSubmissions(allSubmissions);
+      setSubmissionsLoaded(true);
     } catch (err) {
       console.error("Error gathering submissions dynamically:", err);
+      setSubmissionsLoaded(true);
     }
   };
 
@@ -280,7 +315,7 @@ const StudentPage = () => {
             </div>
             <div>
               <span className="text-xs font-bold text-slate-400 dark:text-slate-300 block uppercase tracking-wider">{stat.title}</span>
-              <span className="text-2xl font-black text-slate-855 dark:text-white leading-tight mt-1 inline-block">{stat.value}</span>
+              <span className="text-2xl font-black text-slate-850 dark:text-white leading-tight mt-1 inline-block">{stat.value}</span>
             </div>
           </div>
         ))}
@@ -288,42 +323,114 @@ const StudentPage = () => {
 
       {/* ═══════════════ DYNAMIC CHARTING INSIGHTS ═══════════════ */}
       {classes.length > 0 && (
-        submissions.length > 0 ? (
-          <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up">
+          {submissions.length > 0 ? (
             <div className="lg:col-span-2">
-              <SubmissionActivityChart data={getWeeklySubmissionActivity(submissions)} />
+              <ActivityCalendar submissions={submissions} />
             </div>
-            <div className="flex flex-col justify-between gap-6">
-              <PerformanceGauge score={avgPercent} label="Average AI Score" />
-              <div className="bg-white dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex-1 space-y-4">
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                  <HelpCircle className="w-4 h-4 text-indigo-500" /> Did You Know?
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  GradifyAI evaluates your documents semantically using advanced NLP rubrics. If you scan handwritten sheets, you can choose OCR extraction to let the AI score and critique normally!
+          ) : (
+            <div className="lg:col-span-2 bg-gradient-to-br from-indigo-50/40 via-violet-50/20 to-emerald-50/30 dark:from-indigo-950/10 dark:via-violet-950/5 dark:to-emerald-950/10 p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm h-full">
+              <div className="space-y-3 max-w-xl text-left">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/40">
+                  <Sparkles className="w-3.5 h-3.5" /> AI Workspace Setup Completed
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-850 dark:text-white leading-tight">
+                  Your Performance Analytics will appear here!
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Once you select an active classroom from the directory below, access the syllabus details, and upload your handwritten homework images or typed essays, GradifyAI's semantic grading engine will map your weekly submission counts and analyze your Average AI Scores in real-time.
                 </p>
               </div>
-            </div>
-          </section>
-        ) : (
-          <section className="bg-gradient-to-br from-indigo-50/40 via-violet-50/20 to-emerald-50/30 dark:from-indigo-950/10 dark:via-violet-950/5 dark:to-emerald-950/10 p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm animate-fade-in-up">
-            <div className="space-y-3 max-w-2xl text-left">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/40">
-                <Sparkles className="w-3.5 h-3.5" /> AI Workspace Setup Completed
+              
+              <div className="shrink-0 w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 animate-pulse">
+                <Award className="w-7 h-7" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-855 dark:text-white leading-tight">
-                Your Performance Analytics will appear here!
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Once you select an active classroom from the directory below, access the syllabus details, and upload your handwritten homework images or typed essays, GradifyAI's semantic grading engine will map your weekly submission counts and analyze your Average AI Scores in real-time.
-              </p>
             </div>
-            
-            <div className="shrink-0 w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 animate-pulse">
-              <Award className="w-7 h-7" />
+          )}
+
+          {/* Pending Assignments Reminder */}
+          <div className="bg-white dark:bg-slate-900/40 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col h-full space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-indigo-500" /> Pending Tasks
+                </h4>
+                <p className="text-[10px] text-slate-500">Assignments to submit</p>
+              </div>
+              {!submissionsLoaded ? (
+                <div className="w-16 h-5 rounded-full bg-slate-100 dark:bg-slate-850 animate-pulse" />
+              ) : (
+                <Badge variant={pendingAssignments.length > 0 ? "rose" : "emerald"}>
+                  {pendingAssignments.length} Remaining
+                </Badge>
+              )}
             </div>
-          </section>
-        )
+
+            <div className="flex-1 overflow-y-auto max-h-[220px] space-y-3 pr-1 scrollbar-thin">
+              {!submissionsLoaded ? (
+                <div className="space-y-3">
+                  {[1, 2].map((n) => (
+                    <div key={n} className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 animate-pulse space-y-2">
+                      <div className="h-3 w-2/3 bg-slate-200 dark:bg-slate-850 rounded" />
+                      <div className="h-2 w-1/3 bg-slate-200 dark:bg-slate-850 rounded" />
+                    </div>
+                  ))}
+                </div>
+              ) : pendingAssignments.length > 0 ? (
+                pendingAssignments.map((assign) => {
+                  const isOverdue = assign.dead_line && new Date(assign.dead_line) < new Date();
+                  return (
+                    <div
+                      key={assign.id}
+                      onClick={() => navigate(`/student/assignment/${assign.id}`)}
+                      className="group p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 hover:border-indigo-150/40 dark:hover:border-indigo-900/40 transition cursor-pointer flex flex-col justify-between gap-1.5"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-2">
+                          <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            {assign.title}
+                          </h5>
+                          <span className="text-[10px] font-semibold text-indigo-500 shrink-0">
+                            {assign.max_marks} pts
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                          {assign.classroom || "General"}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[10px] pt-1">
+                        <span className={`inline-flex items-center gap-1 font-bold ${isOverdue ? "text-rose-600 dark:text-rose-455" : "text-slate-500 dark:text-slate-400"}`}>
+                          <Calendar className="w-3 h-3 shrink-0" />
+                          {assign.dead_line ? (
+                            isOverdue ? (
+                              `Overdue: ${new Date(assign.dead_line).toLocaleDateString()}`
+                            ) : (
+                              `Due: ${new Date(assign.dead_line).toLocaleDateString()}`
+                            )
+                          ) : (
+                            "No Deadline"
+                          )}
+                        </span>
+                        <span className="text-[10px] font-extrabold text-indigo-650 dark:text-indigo-400 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          Submit <ChevronRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center p-4 space-y-2">
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <CheckCircle className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-350">All caught up!</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 max-w-[180px]">You have submitted all active assignments.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
       )}
 
       {/* ═══════════════ TOOLBAR SEARCH & ACTIONS ═══════════════ */}

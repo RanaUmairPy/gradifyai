@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import {
   BookOpen, PlusCircle, AlertTriangle, Users, Book, 
   MoreVertical, Edit3, Trash2, Save, Sparkles, Copy, 
-  Check, ArrowRight, BarChart2, Calendar
+  Check, ArrowRight, BarChart2, Calendar, Clock, CheckCircle
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import BASE_API from "../BaseApi";
@@ -36,8 +36,8 @@ const TeacherPage = () => {
   
   const [deletingClass, setDeletingClass] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  
   const [copiedCodeId, setCopiedCodeId] = useState(null);
+  const [dashboardAssignments, setDashboardAssignments] = useState([]);
   const menuRef = useRef(null);
 
   const [stats, setStats] = useState({
@@ -58,6 +58,7 @@ const TeacherPage = () => {
         gradeDistribution: [],
         loadingStats: false,
       });
+      setDashboardAssignments([]);
       return;
     }
 
@@ -69,7 +70,13 @@ const TeacherPage = () => {
           });
           if (res.ok) {
             const data = await res.json();
-            return Array.isArray(data) ? data : [];
+            const list = Array.isArray(data) ? data : [];
+            return list.map(assign => ({
+              ...assign,
+              classroomName: cls.name,
+              classroomCode: cls.code,
+              totalClassStudents: cls.students?.length || 0
+            }));
           }
         } catch (e) {
           console.error(e);
@@ -88,6 +95,7 @@ const TeacherPage = () => {
           gradeDistribution: [],
           loadingStats: false,
         });
+        setDashboardAssignments([]);
         return;
       }
 
@@ -98,11 +106,14 @@ const TeacherPage = () => {
           });
           if (res.ok) {
             const data = await res.json();
-            return Array.isArray(data) ? data.map(sub => ({ ...sub, assignmentMaxMarks: assign.max_marks || 100 })) : [];
+            const subs = Array.isArray(data) ? data : [];
+            assign.submittedCount = subs.length;
+            return subs.map(sub => ({ ...sub, assignmentMaxMarks: assign.max_marks || 100 }));
           }
         } catch (e) {
           console.error(e);
         }
+        assign.submittedCount = 0;
         return [];
       });
 
@@ -173,6 +184,7 @@ const TeacherPage = () => {
         gradeDistribution: distribution,
         loadingStats: false,
       });
+      setDashboardAssignments(allAssignments);
 
     } catch (e) {
       console.error(e);
@@ -353,6 +365,12 @@ const TeacherPage = () => {
     }
   };
 
+  // Open Delete Confirmation modal
+  const openDeleteConfirm = (cls) => {
+    setDeletingClass(cls);
+    setOpenMenuId(null);
+  };
+
   // Delete execution
   const handleConfirmDelete = async () => {
     if (!deletingClass) return;
@@ -396,6 +414,13 @@ const TeacherPage = () => {
 
   // Derived dashboard statistics
   const totalStudents = classes.reduce((acc, c) => acc + (c.students?.length || 0), 0);
+
+  // Filter assignments that are active (deadline not passed AND not all students have submitted yet)
+  const activeAssignments = dashboardAssignments.filter((assign) => {
+    const isClosed = assign.dead_line && new Date(assign.dead_line) < new Date();
+    const allSubmitted = assign.totalClassStudents > 0 && assign.submittedCount >= assign.totalClassStudents;
+    return !isClosed && !allSubmitted;
+  });
 
   if (loading) {
     return (
@@ -461,9 +486,89 @@ const TeacherPage = () => {
           <div className="lg:col-span-2">
             <SubmissionActivityChart data={stats.activityData} />
           </div>
-          <div className="space-y-6">
-            <GradeDistributionChart data={stats.gradeDistribution} />
-            <PerformanceGauge score={stats.avgGrade} />
+          <div className="h-full">
+            
+            {/* Active Assignments Reminders */}
+            <div className="bg-white dark:bg-slate-900/40 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col h-full space-y-4">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-indigo-500" /> Active Tasks
+                  </h4>
+                  <p className="text-[10px] text-slate-500">Submission progress reminders</p>
+                </div>
+                <Badge variant={activeAssignments.length > 0 ? "indigo" : "emerald"}>
+                  {activeAssignments.length} Active
+                </Badge>
+              </div>
+
+              <div className="flex-1 overflow-y-auto max-h-[220px] space-y-3 pr-1 scrollbar-thin">
+                {stats.loadingStats ? (
+                  <div className="space-y-3">
+                    {[1, 2].map((n) => (
+                      <div key={n} className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 animate-pulse space-y-2">
+                        <div className="h-3 w-2/3 bg-slate-200 dark:bg-slate-800 rounded" />
+                        <div className="h-2 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                ) : activeAssignments.length > 0 ? (
+                  activeAssignments.map((assign) => {
+                    const total = assign.totalClassStudents || 0;
+                    const submitted = assign.submittedCount || 0;
+                    const isOverdue = assign.dead_line && new Date(assign.dead_line) < new Date();
+
+                    return (
+                      <div
+                        key={assign.id}
+                        onClick={() => navigate(`/teacher/assignment/${assign.id}/submissions`)}
+                        className="group p-3 rounded-xl border border-slate-100 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/20 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 hover:border-indigo-150/40 dark:hover:border-indigo-900/40 transition cursor-pointer flex flex-col justify-between gap-1.5"
+                      >
+                        <div>
+                          <div className="flex justify-between items-start gap-2">
+                            <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-indigo-650 dark:group-hover:text-indigo-400 transition-colors">
+                              {assign.title}
+                            </h5>
+                            <span className="text-[10px] font-black text-indigo-650 dark:text-indigo-400 shrink-0 bg-indigo-50 dark:bg-indigo-950/50 px-1.5 py-0.5 rounded">
+                              {submitted}/{total}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                            {assign.classroomName}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[10px] pt-1">
+                          <span className={`inline-flex items-center gap-1 font-bold ${isOverdue ? "text-rose-600 dark:text-rose-455" : "text-slate-500 dark:text-slate-400"}`}>
+                            <Calendar className="w-3.5 h-3.5 shrink-0 text-slate-450" />
+                            {assign.dead_line ? (
+                              isOverdue ? (
+                                `Closed: ${new Date(assign.dead_line).toLocaleDateString()}`
+                              ) : (
+                                `Due: ${new Date(assign.dead_line).toLocaleDateString()}`
+                              )
+                            ) : (
+                              "No Deadline"
+                            )}
+                          </span>
+                          <span className="text-[10px] font-extrabold text-indigo-650 dark:text-indigo-400 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            View <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center py-6 space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-350">All assignments complete!</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 max-w-[180px]">No active submissions pending review.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </section>
       )}
