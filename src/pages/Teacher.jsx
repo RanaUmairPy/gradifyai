@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-  BookOpen, PlusCircle, AlertTriangle, Users, Book, 
-  MoreVertical, Edit3, Trash2, Save, Sparkles, Copy, 
-  Check, ArrowRight, BarChart2, Calendar, Clock, CheckCircle
+  BookOpen, PlusCircle, AlertTriangle, Users, Book,
+  MoreVertical, Edit3, Trash2, Save, Sparkles, Copy,
+  Check, ArrowRight, BarChart2, Calendar, Search,
+  Clock, ArrowUpRight, FileText, CheckCircle2
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import BASE_API from "../BaseApi";
@@ -10,187 +11,142 @@ import { useToast } from "../context/ToastContext";
 import { ShimmerDashboard } from "../components/ui/Shimmer";
 import { Badge } from "../components/ui/Badge";
 import { Modal } from "../components/ui/Modal";
-import { SubmissionActivityChart, GradeDistributionChart, PerformanceGauge } from "../components/ui/Charts";
 
 const TeacherPage = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  
+
   const [teacher, setTeacher] = useState(null);
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   // Modals state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [className, setClassName] = useState("");
   const [classCode, setClassCode] = useState("");
   const [creating, setCreating] = useState(false);
-  
+
   const [openMenuId, setOpenMenuId] = useState(null);
   const [editingClass, setEditingClass] = useState(null);
   const [editName, setEditName] = useState("");
   const [editCode, setEditCode] = useState("");
   const [editError, setEditError] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
-  
+
   const [deletingClass, setDeletingClass] = useState(null);
   const [deleting, setDeleting] = useState(false);
+
   const [copiedCodeId, setCopiedCodeId] = useState(null);
-  const [dashboardAssignments, setDashboardAssignments] = useState([]);
   const menuRef = useRef(null);
 
-  const [stats, setStats] = useState({
-    avgGrade: 84, // Start with beautiful fallback matching screenshots
-    activeOcrTasks: 2,
-    activityData: [],
-    gradeDistribution: [],
-    loadingStats: true,
-  });
+  const [rawAssignments, setRawAssignments] = useState([]);
+  const [rawSubmissions, setRawSubmissions] = useState([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [selectedClassId, setSelectedClassId] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const loadDashboardStats = async (currentClasses) => {
     const token = localStorage.getItem("access");
     if (!token || !currentClasses || currentClasses.length === 0) {
-      setStats({
-        avgGrade: 0,
-        activeOcrTasks: 0,
-        activityData: [],
-        gradeDistribution: [],
-        loadingStats: false,
-      });
-      setDashboardAssignments([]);
+      setRawAssignments([]);
+      setRawSubmissions([]);
+      setLoadingStats(false);
       return;
     }
 
     try {
-      const assignmentsPromises = currentClasses.map(async (cls) => {
-        try {
-          const res = await fetch(`${BASE_API}api/classassignments/?classroom=${cls.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.ok) {
-            const data = await res.json();
-            const list = Array.isArray(data) ? data : [];
-            return list.map(assign => ({
-              ...assign,
-              classroomName: cls.name,
-              classroomCode: cls.code,
-              totalClassStudents: cls.students?.length || 0
-            }));
-          }
-        } catch (e) {
-          console.error(e);
-        }
-        return [];
+      setLoadingStats(true);
+
+      const assignRes = await fetch(`${BASE_API}api/classassignments/`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      const assignmentsArrays = await Promise.all(assignmentsPromises);
-      const allAssignments = assignmentsArrays.flat();
-
-      if (allAssignments.length === 0) {
-        setStats({
-          avgGrade: 0,
-          activeOcrTasks: 0,
-          activityData: [],
-          gradeDistribution: [],
-          loadingStats: false,
-        });
-        setDashboardAssignments([]);
-        return;
+      let allAssignments = [];
+      if (assignRes.ok) {
+        const data = await assignRes.json();
+        allAssignments = Array.isArray(data) ? data.map(assign => ({
+          ...assign,
+          classroomId: assign.classroom_id_val
+        })) : [];
       }
 
-      const submissionsPromises = allAssignments.map(async (assign) => {
-        try {
-          const res = await fetch(`${BASE_API}api/classsubmissions/?assignment_id=${assign.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.ok) {
-            const data = await res.json();
-            const subs = Array.isArray(data) ? data : [];
-            assign.submittedCount = subs.length;
-            return subs.map(sub => ({ ...sub, assignmentMaxMarks: assign.max_marks || 100 }));
-          }
-        } catch (e) {
-          console.error(e);
-        }
-        assign.submittedCount = 0;
-        return [];
+      const subsRes = await fetch(`${BASE_API}api/classsubmissions/`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      const submissionsArrays = await Promise.all(submissionsPromises);
-      const allSubmissions = submissionsArrays.flat();
-
-      const gradedSubmissions = allSubmissions.filter(
-        (sub) => sub.teacher_marks !== null || sub.ai_marks !== null
-      );
-      
-      let avgGrade = 0;
-      if (gradedSubmissions.length > 0) {
-        const totalPct = gradedSubmissions.reduce((acc, sub) => {
-          const score = sub.teacher_marks !== null ? sub.teacher_marks : sub.ai_marks;
-          const max = sub.assignmentMaxMarks || 100;
-          return acc + (score / max) * 100;
-        }, 0);
-        avgGrade = Math.round(totalPct / gradedSubmissions.length);
+      let allSubmissions = [];
+      if (subsRes.ok) {
+        const data = await subsRes.json();
+        allSubmissions = Array.isArray(data) ? data.map(sub => ({
+          ...sub,
+          assignmentMaxMarks: sub.assignment_max_marks || 100,
+          classroomId: sub.classroom_id_val
+        })) : [];
       }
 
-      const ocrTasksActive = allSubmissions.filter(sub => sub.images && sub.images.length > 0).length;
-
-      let distribution = [
-        { label: "A (80-100)", count: 0, color: "bg-emerald-500" },
-        { label: "B (65-79)", count: 0, color: "bg-indigo-500" },
-        { label: "C (51-64)", count: 0, color: "bg-purple-500" },
-        { label: "D (41-49)", count: 0, color: "bg-amber-500" },
-        { label: "F (<40)", count: 0, color: "bg-rose-500" },
-      ];
-
-      gradedSubmissions.forEach((sub) => {
-        const score = sub.teacher_marks !== null ? sub.teacher_marks : sub.ai_marks;
-        const max = sub.assignmentMaxMarks || 100;
-        const pct = (score / max) * 100;
-        if (pct >= 80) distribution[0].count++;
-        else if (pct >= 65) distribution[1].count++;
-        else if (pct >= 50) distribution[2].count++;
-        else if (pct >= 40) distribution[3].count++;
-        else distribution[4].count++;
-      });
-
-      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const activityMap = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-      
-      allSubmissions.forEach((sub) => {
-        const dateStr = sub.created_at || sub.submitted_at;
-        if (dateStr) {
-          const date = new Date(dateStr);
-          const dayName = days[date.getDay()];
-          activityMap[dayName] = (activityMap[dayName] || 0) + 1;
-        }
-      });
-
-      const activityData = [
-        { label: "Mon", value: activityMap["Mon"] },
-        { label: "Tue", value: activityMap["Tue"] },
-        { label: "Wed", value: activityMap["Wed"] },
-        { label: "Thu", value: activityMap["Thu"] },
-        { label: "Fri", value: activityMap["Fri"] },
-        { label: "Sat", value: activityMap["Sat"] },
-        { label: "Sun", value: activityMap["Sun"] },
-      ];
-
-      setStats({
-        avgGrade,
-        activeOcrTasks: ocrTasksActive,
-        activityData,
-        gradeDistribution: distribution,
-        loadingStats: false,
-      });
-      setDashboardAssignments(allAssignments);
-
+      setRawAssignments(allAssignments);
+      setRawSubmissions(allSubmissions);
+      setLoadingStats(false);
     } catch (e) {
-      console.error(e);
-      setStats(prev => ({ ...prev, loadingStats: false }));
+      console.error("Error loading dashboard stats:", e);
+      setLoadingStats(false);
     }
   };
+
+  const computedStats = React.useMemo(() => {
+    const filteredAssignments = selectedClassId === "all"
+      ? rawAssignments
+      : rawAssignments.filter(a => a.classroomId === Number(selectedClassId));
+
+    const filteredSubmissions = selectedClassId === "all"
+      ? rawSubmissions
+      : rawSubmissions.filter(s => s.classroomId === Number(selectedClassId));
+
+    const gradedSubmissions = filteredSubmissions.filter(
+      (sub) => sub.teacher_marks !== null || sub.openai_score !== null || sub.marks !== null
+    );
+
+    const ocrTasksActive = filteredSubmissions.filter(
+      sub => sub.images && sub.images.length > 0
+    ).length;
+
+    const totalSubmissions = filteredSubmissions.length;
+    const gradedCount = gradedSubmissions.length;
+    const pendingCount = totalSubmissions - gradedCount;
+
+    let distribution = [
+      { label: "A+ (85-100)", count: 0, color: "bg-emerald-600" },
+      { label: "A (80-84)", count: 0, color: "bg-emerald-500" },
+      { label: "B (65-79)", count: 0, color: "bg-indigo-500" },
+      { label: "C (55-64)", count: 0, color: "bg-purple-500" },
+      { label: "D (50-54)", count: 0, color: "bg-amber-500" },
+      { label: "F (<50)", count: 0, color: "bg-rose-500" },
+    ];
+
+    gradedSubmissions.forEach((sub) => {
+      const score = sub.teacher_marks !== null
+        ? sub.teacher_marks
+        : (sub.openai_score !== null ? sub.openai_score : sub.marks);
+
+      if (score === null || score === undefined) return;
+      const max = sub.assignmentMaxMarks || 100;
+      const pct = max > 0 ? (score / max) * 100 : 0;
+      if (pct >= 85) distribution[0].count++;
+      else if (pct >= 80) distribution[1].count++;
+      else if (pct >= 65) distribution[2].count++;
+      else if (pct >= 55) distribution[3].count++;
+      else if (pct >= 50) distribution[4].count++;
+      else distribution[5].count++;
+    });
+
+    return {
+      totalAssignments: filteredAssignments.length,
+      totalSubmissions,
+      gradedCount,
+      pendingCount,
+      activeOcrTasks: ocrTasksActive,
+      gradeDistribution: distribution,
+    };
+  }, [selectedClassId, rawAssignments, rawSubmissions]);
 
   // Close options menu on click outside
   useEffect(() => {
@@ -365,12 +321,6 @@ const TeacherPage = () => {
     }
   };
 
-  // Open Delete Confirmation modal
-  const openDeleteConfirm = (cls) => {
-    setDeletingClass(cls);
-    setOpenMenuId(null);
-  };
-
   // Delete execution
   const handleConfirmDelete = async () => {
     if (!deletingClass) return;
@@ -412,14 +362,19 @@ const TeacherPage = () => {
     setTimeout(() => setCopiedCodeId(null), 2000);
   };
 
+  const openDeleteConfirm = (cls) => {
+    setDeletingClass(cls);
+    setOpenMenuId(null);
+  };
+
   // Derived dashboard statistics
   const totalStudents = classes.reduce((acc, c) => acc + (c.students?.length || 0), 0);
 
-  // Filter assignments that are active (deadline not passed AND not all students have submitted yet)
-  const activeAssignments = dashboardAssignments.filter((assign) => {
-    const isClosed = assign.dead_line && new Date(assign.dead_line) < new Date();
-    const allSubmitted = assign.totalClassStudents > 0 && assign.submittedCount >= assign.totalClassStudents;
-    return !isClosed && !allSubmitted;
+  const filteredClasses = classes.filter(cls => {
+    const matchesClass = selectedClassId === "all" || cls.id === Number(selectedClassId);
+    const matchesSearch = cls.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cls.code.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesClass && matchesSearch;
   });
 
   if (loading) {
@@ -432,161 +387,153 @@ const TeacherPage = () => {
 
   return (
     <div className="space-y-8 animate-fade-in-up">
-      
+
       {/* ═══════════════ GREETING & HERO PANEL ═══════════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-violet-200 text-xs font-bold uppercase tracking-widest border border-white/10 backdrop-blur-sm">
-              <Sparkles className="w-3.5 h-3.5" /> Workspace Active
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-750 via-indigo-650 to-violet-800 dark:from-slate-900 dark:via-indigo-950/70 dark:to-slate-900 rounded-3xl p-8 text-white shadow-xl border border-indigo-500/20 dark:border-slate-800/80 transition-all duration-300">
+        <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-gradient-to-br from-indigo-500/20 to-violet-600/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 dark:bg-indigo-500/10 text-indigo-100 dark:text-indigo-300 text-[11px] font-extrabold uppercase tracking-wider border border-white/10 dark:border-indigo-500/20 backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-pulse" /> Workspace Active
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-none">
-              Welcome back, <span className="underline decoration-indigo-400 decoration-wavy">{teacher?.name || "Professor"}</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-none text-slate-50 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-slate-50 dark:via-indigo-100 dark:to-white">
+              Welcome back, <span className="text-white font-extrabold border-b-4 border-dashed border-indigo-400/60 pb-1">{teacher?.name || "Professor"}</span>
             </h1>
-            <p className="text-sm sm:text-base text-violet-100 max-w-xl">
+            <p className="text-sm sm:text-base text-indigo-100/90 dark:text-slate-350 max-w-2xl font-medium leading-relaxed font-sans">
               Track student enrollment, assignment criteria, and review semantic AI auto-grading results inside your classrooms.
             </p>
           </div>
-          
+
           <button
             onClick={() => setShowCreateModal(true)}
-            className="self-start md:self-center shrink-0 flex items-center gap-2 bg-white text-indigo-700 font-extrabold px-6 py-3.5 rounded-2xl shadow-lg hover:bg-slate-50 transition transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-sm"
+            className="self-start lg:self-center shrink-0 flex items-center gap-2.5 bg-white dark:bg-indigo-600 hover:bg-slate-50 dark:hover:bg-indigo-500 text-indigo-700 dark:text-white font-black px-6 py-4 rounded-2xl shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-xs uppercase tracking-wider border border-indigo-100/20 dark:border-indigo-500"
           >
             <PlusCircle className="w-5 h-5" /> Create New Class
           </button>
         </div>
       </section>
 
-      {/* ═══════════════ STATS GRID CARD PANELS ═══════════════ */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { title: "Active Classrooms", value: classes.length, icon: BookOpen, color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/40" },
-          { title: "Total Students Joined", value: totalStudents, icon: Users, color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40" },
-          { title: "Class average grade", value: classes.length > 0 ? `${stats.avgGrade}%` : "N/A", icon: BarChart2, color: "text-purple-600 bg-purple-50 dark:bg-purple-950/40" },
-          { title: "OCR Tasks Active", value: classes.length > 0 ? stats.activeOcrTasks : "0", icon: Calendar, color: "text-amber-600 bg-amber-50 dark:bg-amber-950/40" }
-        ].map((stat, idx) => (
-          <div key={idx} className="bg-white dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex items-center gap-4 hover:shadow-md transition">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${stat.color}`}>
-              <stat.icon className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider">{stat.title}</span>
-              <span className="text-2xl font-black text-slate-850 dark:text-white leading-tight mt-1 inline-block">{stat.value}</span>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* ═══════════════ DYNAMIC CHARTING INSIGHTS ═══════════════ */}
+      {/* ═══════════════ INTERACTIVE ANALYTICS FILTER ═══════════════ */}
       {classes.length > 0 && (
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <SubmissionActivityChart data={stats.activityData} />
+        <section className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-md p-6 rounded-3xl border border-slate-150 dark:border-slate-800/80 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300">
+          <div className="space-y-1">
+            <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping inline-block" />
+              Interactive Analytics Panel
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-450 font-medium">Filter all dashboard statistics and distribution metrics by classroom</p>
           </div>
-          <div className="h-full">
-            
-            {/* Active Assignments Reminders */}
-            <div className="bg-white dark:bg-slate-900/40 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm flex flex-col h-full space-y-4">
-              <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-indigo-500" /> Active Tasks
-                  </h4>
-                  <p className="text-[10px] text-slate-500">Submission progress reminders</p>
-                </div>
-                <Badge variant={activeAssignments.length > 0 ? "indigo" : "emerald"}>
-                  {activeAssignments.length} Active
-                </Badge>
-              </div>
-
-              <div className="flex-1 overflow-y-auto max-h-[220px] space-y-3 pr-1 scrollbar-thin">
-                {stats.loadingStats ? (
-                  <div className="space-y-3">
-                    {[1, 2].map((n) => (
-                      <div key={n} className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 animate-pulse space-y-2">
-                        <div className="h-3 w-2/3 bg-slate-200 dark:bg-slate-800 rounded" />
-                        <div className="h-2 w-1/3 bg-slate-200 dark:bg-slate-800 rounded" />
-                      </div>
-                    ))}
-                  </div>
-                ) : activeAssignments.length > 0 ? (
-                  activeAssignments.map((assign) => {
-                    const total = assign.totalClassStudents || 0;
-                    const submitted = assign.submittedCount || 0;
-                    const isOverdue = assign.dead_line && new Date(assign.dead_line) < new Date();
-
-                    return (
-                      <div
-                        key={assign.id}
-                        onClick={() => navigate(`/teacher/assignment/${assign.id}/submissions`)}
-                        className="group p-3 rounded-xl border border-slate-100 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/20 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10 hover:border-indigo-150/40 dark:hover:border-indigo-900/40 transition cursor-pointer flex flex-col justify-between gap-1.5"
-                      >
-                        <div>
-                          <div className="flex justify-between items-start gap-2">
-                            <h5 className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1 group-hover:text-indigo-650 dark:group-hover:text-indigo-400 transition-colors">
-                              {assign.title}
-                            </h5>
-                            <span className="text-[10px] font-black text-indigo-650 dark:text-indigo-400 shrink-0 bg-indigo-50 dark:bg-indigo-950/50 px-1.5 py-0.5 rounded">
-                              {submitted}/{total}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
-                            {assign.classroomName}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between text-[10px] pt-1">
-                          <span className={`inline-flex items-center gap-1 font-bold ${isOverdue ? "text-rose-600 dark:text-rose-455" : "text-slate-500 dark:text-slate-400"}`}>
-                            <Calendar className="w-3.5 h-3.5 shrink-0 text-slate-450" />
-                            {assign.dead_line ? (
-                              isOverdue ? (
-                                `Closed: ${new Date(assign.dead_line).toLocaleDateString()}`
-                              ) : (
-                                `Due: ${new Date(assign.dead_line).toLocaleDateString()}`
-                              )
-                            ) : (
-                              "No Deadline"
-                            )}
-                          </span>
-                          <span className="text-[10px] font-extrabold text-indigo-650 dark:text-indigo-400 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            View <ArrowRight className="w-3 h-3" />
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center py-6 space-y-2">
-                    <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <p className="text-xs font-bold text-slate-700 dark:text-slate-350">All assignments complete!</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 max-w-[180px]">No active submissions pending review.</p>
-                  </div>
-                )}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-extrabold text-slate-550 dark:text-slate-400 uppercase tracking-wider">Classroom:</span>
+            <div className="relative">
+              <select
+                id="classroom-select"
+                value={selectedClassId}
+                onChange={(e) => setSelectedClassId(e.target.value)}
+                className="appearance-none pr-10 pl-4 py-2.5 bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800/80 rounded-xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-700 dark:text-slate-200 cursor-pointer shadow-sm transition-all"
+              >
+                <option value="all">All Classrooms</option>
+                {classes.map((cls) => (
+                  <option key={cls.id} value={cls.id}>{cls.name}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-450 dark:text-slate-500">
+                <BookOpen className="w-3.5 h-3.5" />
               </div>
             </div>
           </div>
         </section>
       )}
 
+      {/* ═══════════════ STATS GRID CARD PANELS ═══════════════ */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          {
+            title: selectedClassId === "all" ? "Active Classrooms" : "Class Code",
+            value: selectedClassId === "all" ? classes.length : (classes.find(c => c.id === Number(selectedClassId))?.code || "N/A"),
+            icon: BookOpen,
+            color: "text-indigo-650 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-150/40"
+          },
+          {
+            title: selectedClassId === "all" ? "Total Students Joined" : "Enrolled Students",
+            value: selectedClassId === "all" ? totalStudents : (classes.find(c => c.id === Number(selectedClassId))?.students?.length || 0),
+            icon: Users,
+            color: "text-emerald-650 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-155/40"
+          },
+          {
+            title: "Total Assignments",
+            value: loadingStats ? "..." : computedStats.totalAssignments,
+            icon: BarChart2,
+            color: "text-purple-650 bg-purple-50 dark:bg-purple-950/40 border border-purple-150/40"
+          },
+          {
+            title: "OCR Tasks Active",
+            value: loadingStats ? "..." : computedStats.activeOcrTasks,
+            icon: Calendar,
+            color: "text-amber-650 bg-amber-50 dark:bg-amber-950/40 border border-amber-150/40"
+          }
+        ].map((stat, idx) => {
+          const isClassCode = stat.title === "Class Code";
+          return (
+            <div
+              key={idx}
+              onClick={() => {
+                if (isClassCode && stat.value !== "N/A") {
+                  navigator.clipboard.writeText(stat.value);
+                  showToast("Class code copied!", "success");
+                }
+              }}
+              className={`bg-white/90 dark:bg-slate-900/60 p-6 rounded-2xl border border-slate-150 dark:border-slate-800/80 shadow-sm flex items-center gap-4 transition-all duration-300 ${isClassCode && stat.value !== "N/A"
+                  ? "cursor-pointer hover:border-indigo-500/40 hover:-translate-y-1 hover:shadow-md hover:bg-slate-50/50 dark:hover:bg-slate-850/30"
+                  : "hover:shadow-md hover:-translate-y-1"
+                }`}
+            >
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${stat.color} transition-transform duration-300`}>
+                <stat.icon className="w-6 h-6" />
+              </div>
+              <div className="flex-grow min-w-0">
+                <span className="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 block uppercase tracking-wider">{stat.title}</span>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-xl sm:text-2xl font-black text-slate-850 dark:text-white leading-tight truncate">
+                    {stat.value}
+                  </span>
+                  {isClassCode && stat.value !== "N/A" && (
+                    <Copy className="w-3.5 h-3.5 text-slate-400 dark:text-slate-550 hover:text-indigo-500 cursor-pointer shrink-0" />
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
       {/* ═══════════════ CLASSROOM PANELS GRID LISTING ═══════════════ */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h2 className="text-xl font-black text-slate-800 dark:text-white tracking-tight flex items-center gap-2.5">
               All Created Classrooms
-              <Badge variant="indigo">{classes.length}</Badge>
+              <Badge variant="indigo" className="px-2.5 py-0.5 text-[10px] font-black">{filteredClasses.length}</Badge>
             </h2>
-            <p className="text-xs text-slate-500">Manage classroom configurations and assignment workflows</p>
+            <p className="text-xs text-slate-500 dark:text-slate-450 font-semibold">Manage classroom configurations and assignment workflows</p>
+          </div>
+
+          <div className="relative w-full sm:w-72 group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search classrooms..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-700 dark:text-slate-200 shadow-sm transition-all placeholder-slate-400 dark:placeholder-slate-600"
+            />
           </div>
         </div>
 
         {error && (
-          <div className="flex items-start p-6 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-2xl">
+          <div className="flex items-start p-6 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-2xl animate-shake">
             <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mr-3 mt-0.5" />
             <div className="flex-1">
               <p className="text-rose-800 dark:text-rose-200 font-bold">Failed to load classes</p>
@@ -595,120 +542,138 @@ const TeacherPage = () => {
           </div>
         )}
 
-        {classes.length === 0 && !error && (
-          <div className="text-center bg-white dark:bg-slate-900/20 rounded-3xl p-12 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center max-w-lg mx-auto">
+        {filteredClasses.length === 0 && !error && (
+          <div className="text-center bg-white/50 dark:bg-slate-900/20 rounded-3xl p-12 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center max-w-lg mx-auto">
             <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-4">
               <Book className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No classrooms available</h3>
-            <p className="text-slate-500 text-sm leading-relaxed max-w-sm mb-6">
-              Create your first online classroom structure to set up keyword constraints, AI auto-evaluations, and direct CSV grading results.
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+              {searchTerm || selectedClassId !== "all" ? "No matching classrooms" : "No classrooms available"}
+            </h3>
+            <p className="text-slate-500 text-sm leading-relaxed max-w-sm mb-6 font-medium">
+              {searchTerm || selectedClassId !== "all"
+                ? "Try adjusting your search query or selecting a different classroom filter."
+                : "Create your first online classroom structure to set up keyword constraints, AI auto-evaluations, and direct CSV grading results."}
             </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="btn-primary"
-            >
-              Set up First Classroom
-            </button>
+            {(!searchTerm && selectedClassId === "all") && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="btn-primary px-6 py-3 text-xs uppercase tracking-wider font-extrabold"
+              >
+                Set up First Classroom
+              </button>
+            )}
           </div>
         )}
 
-        {classes.length > 0 && (
+        {filteredClasses.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {classes.map((cls) => (
-              <div
-                key={cls.id}
-                onClick={() => navigate(`/teacher/class/${cls.id}`)}
-                className="group relative bg-white dark:bg-slate-900/40 rounded-2xl p-6 border border-slate-150 dark:border-slate-800/80 hover:border-indigo-500/30 dark:hover:border-indigo-500/40 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col"
-              >
-                {/* 3-dot Options menu trigger */}
+            {filteredClasses.map((cls, idx) => {
+              const borderAccents = [
+                "border-t-indigo-500 dark:border-t-indigo-500",
+                "border-t-emerald-500 dark:border-t-emerald-500",
+                "border-t-purple-500 dark:border-t-purple-500",
+                "border-t-amber-500 dark:border-t-amber-500",
+              ];
+              const accentClass = borderAccents[idx % borderAccents.length];
+
+              return (
                 <div
-                  className="absolute top-4 right-4 z-10"
-                  ref={openMenuId === cls.id ? menuRef : null}
+                  key={cls.id}
+                  onClick={() => navigate(`/teacher/class/${cls.id}`)}
+                  className={`group relative bg-white/95 dark:bg-slate-900/60 rounded-2xl p-6 border-t-4 ${accentClass} border-x border-b border-slate-150 dark:border-slate-800/80 hover:border-indigo-500/30 dark:hover:border-indigo-500/40 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col`}
                 >
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOpenMenuId(openMenuId === cls.id ? null : cls.id);
-                    }}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
-                    aria-label="Class Options"
+                  {/* 3-dot Options menu trigger */}
+                  <div
+                    className="absolute top-4 right-4 z-10"
+                    ref={openMenuId === cls.id ? menuRef : null}
                   >
-                    <MoreVertical className="w-4 h-4" />
-                  </button>
-
-                  {openMenuId === cls.id && (
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="absolute right-0 mt-2 w-44 bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800/80 rounded-xl shadow-xl py-1 overflow-hidden z-20"
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMenuId(openMenuId === cls.id ? null : cls.id);
+                      }}
+                      className="p-1.5 rounded-lg text-slate-400 dark:text-slate-550 hover:text-indigo-650 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-all duration-200"
+                      aria-label="Class Options"
                     >
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openEditModal(cls);
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-                      >
-                        <Edit3 className="w-3.5 h-3.5 text-slate-400" /> Settings
-                      </button>
-                      <hr className="border-slate-100 dark:border-slate-800" />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDeleteConfirm(cls);
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete Classroom
-                      </button>
-                    </div>
-                  )}
-                </div>
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
 
-                {/* Main classroom information */}
-                <div className="flex-grow space-y-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center group-hover:scale-110 transition">
-                    <BookOpen className="w-5 h-5 text-indigo-500" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
-                    {cls.name}
-                  </h3>
-                  
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <Users className="w-4 h-4 text-slate-400" />
-                    <span>{cls.students?.length || 0} students enrolled</span>
-                  </div>
-                </div>
-
-                {/* Footer and Code Shortcut */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-                  <button
-                    onClick={(e) => copyToClipboard(e, cls.code, cls.id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-850 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-600 dark:text-slate-300 font-extrabold text-xs transition border border-slate-200/40 dark:border-slate-800"
-                    title="Copy Join Code"
-                  >
-                    {copiedCodeId === cls.id ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="font-mono text-slate-800 dark:text-white">{cls.code}</span>
-                      </>
+                    {openMenuId === cls.id && (
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute right-0 mt-2 w-44 bg-white dark:bg-slate-850 border border-slate-200/80 dark:border-slate-800 rounded-xl shadow-xl py-1 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-150"
+                      >
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(cls);
+                          }}
+                          className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-550" /> Settings
+                        </button>
+                        <hr className="border-slate-100 dark:border-slate-800/85" />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeleteConfirm(cls);
+                          }}
+                          className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-rose-650 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-rose-500" /> Delete Classroom
+                        </button>
+                      </div>
                     )}
-                  </button>
-                  
-                  <span className="text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
-                    Manage <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+                  </div>
+
+                  {/* Main classroom information */}
+                  <div className="flex-grow space-y-4 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center group-hover:scale-110 transition duration-300">
+                      <BookOpen className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-800 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition duration-200">
+                        {cls.name}
+                      </h3>
+
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-450 mt-1.5 font-medium">
+                        <Users className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                        <span>{cls.students?.length || 0} students enrolled</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer and Code Shortcut */}
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                    <button
+                      onClick={(e) => copyToClipboard(e, cls.code, cls.id)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-850 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-slate-650 dark:text-slate-350 font-extrabold text-xs transition duration-200 border border-slate-200/40 dark:border-slate-800"
+                      title="Copy Join Code"
+                    >
+                      {copiedCodeId === cls.id ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5 text-slate-450 dark:text-slate-500" />
+                          <span className="font-mono text-slate-800 dark:text-white">{cls.code}</span>
+                        </>
+                      )}
+                    </button>
+
+                    <span className="text-indigo-600 dark:text-indigo-400 text-xs font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      Manage <ArrowRight className="w-3.5 h-3.5 animate-pulse" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
@@ -744,7 +709,7 @@ const TeacherPage = () => {
               className="input-field"
             />
           </div>
-          
+
           <div className="flex gap-3 pt-4">
             <button
               type="button"
@@ -831,7 +796,7 @@ const TeacherPage = () => {
             <span className="font-extrabold text-slate-900 dark:text-white">“{deletingClass?.name}”</span>?
             This will permanently remove all student submissions, homework tasks, grades, and reference attachments. This cannot be undone.
           </p>
-          
+
           <div className="flex gap-3 pt-4">
             <button
               type="button"

@@ -175,11 +175,12 @@ export const SubmissionActivityChart = ({ data = [], height = 200 }) => {
 export const GradeDistributionChart = ({ data = [], height = 180 }) => {
   if (!data || data.length === 0) {
     data = [
-      { label: "A (80-100)", count: 0, color: "bg-emerald-500" },
+      { label: "A+ (85-100)", count: 0, color: "bg-emerald-600" },
+      { label: "A (80-84)", count: 0, color: "bg-emerald-500" },
       { label: "B (65-79)", count: 0, color: "bg-indigo-500" },
-      { label: "C (51-64)", count: 0, color: "bg-purple-500" },
-      { label: "D (41-49)", count: 0, color: "bg-amber-500" },
-      { label: "F (<40)", count: 2, color: "bg-rose-500" },
+      { label: "C (55-64)", count: 0, color: "bg-purple-500" },
+      { label: "D (50-54)", count: 0, color: "bg-amber-500" },
+      { label: "F (<50)", count: 0, color: "bg-rose-500" },
     ];
   }
 
